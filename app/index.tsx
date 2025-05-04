@@ -1,5 +1,4 @@
 import WorkoutDataContainer from "@/components/workoutData";
-import WoroutData from "@/components/workout";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Link, Stack } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -13,7 +12,6 @@ import {
   Text,
   View,
 } from "react-native";
-import WorkoutContainer from "@/components/workout";
 
 
 export default function Index() {
@@ -63,6 +61,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   input: {
     fontSize: 16,
+    padding:10,
   },
   inputContainer: {
     margin: 20,
@@ -72,6 +71,7 @@ const styles = StyleSheet.create({
     borderColor: "#aaaaaa",
   },
   button: {
+    margin:5,
     width: 100,
     height: 30,
     borderWidth: 1,

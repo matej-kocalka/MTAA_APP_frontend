@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "MTAA_APP_frontend",
-    "slug": "MTAA_APP_frontend",
+    "slug": "mtaa-app-frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kocalka-urban.mtaa",
+      "bundleIdentifier": "com.kocalkaurban.mtaa",
       "appleTeamId": "PG4K2MQD4A"
     },
     "android": {
@@ -18,7 +18,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kocalka-urban.mtaa"
+      "package": "com.kocalkaurban.mtaa"
     },
     "web": {
       "bundler": "metro",
