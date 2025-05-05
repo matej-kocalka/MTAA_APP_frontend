@@ -1,7 +1,9 @@
 import React from "react";
 import { Friend } from "@/app/(tabs)/friendsList"
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, Image } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import ThemedThouchable from "./ThemedTouchable";
+import ThemedText from "./ThemedText";
 
 type FriendProps = {
     data: Friend;
@@ -9,15 +11,15 @@ type FriendProps = {
 
 const FriendContainer = (friendProps: FriendProps) => {
     return (
-        <TouchableOpacity style={styles.FriendContainer}>
+        <ThemedThouchable style={styles.FriendContainer}>
             <Image
                 source={friendProps.data.profilePic}
                 style={styles.image}
             />
-            <Text style={styles.FriendName}>
+            <ThemedText style={styles.FriendName}>
                 {friendProps.data.name}
-            </Text>
-        </TouchableOpacity>
+            </ThemedText>
+        </ThemedThouchable>
     );
 };
 
@@ -29,7 +31,6 @@ const styles = StyleSheet.create({
         marginTop: 15,
         padding: 12,
         borderRadius: 5,
-        backgroundColor: "lightgray",
         shadowColor: "#000",
         shadowOffset: {
             width: 0,

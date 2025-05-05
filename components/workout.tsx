@@ -1,7 +1,10 @@
 import React from "react";
 import { Workout } from "@/app/(tabs)/workoutList"
-import { TouchableOpacity, StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import ThemedThouchable from "./ThemedTouchable";
+import ThemedText from "./ThemedText";
+import ThemedContainer from "./ThemedContainer";
 
 type WorkoutProps = {
     data: Workout;
@@ -9,47 +12,47 @@ type WorkoutProps = {
 
 const WorkoutContainer = (workoutProps: WorkoutProps) => {
     return (
-        <TouchableOpacity style={styles.WorkoutContainer}>
-            <Text style={styles.WorkoutName}>
+        <ThemedThouchable style={styles.WorkoutContainer}>
+            <ThemedText style={styles.WorkoutName}>
                 {workoutProps.data.name}
-            </Text>
-            <Text style={{}}>
+            </ThemedText>
+            <ThemedText style={{}}>
                 {workoutProps.data.date.getDate() + ". " + (workoutProps.data.date.getMonth() + 1) + ". " + workoutProps.data.date.getFullYear()}
-            </Text>
-            <Text style={{}}>
+            </ThemedText>
+            <ThemedText style={{}}>
                 {workoutProps.data.distance + " km"}
-            </Text>
-        </TouchableOpacity>
+            </ThemedText>
+        </ThemedThouchable>
     );
 };
 
 const WorkoutInfoBox = (workoutProps: WorkoutProps) => {
     return (
-        <View style={styles.WorkoutContainer}>
-            <Text style={styles.WorkoutName}>
+        <ThemedContainer style={styles.WorkoutContainer}>
+            <ThemedText style={styles.WorkoutName}>
                 {workoutProps.data.name}
-            </Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
-                <View>
-                    <Text>Duration:</Text>
-                    <Text style={styles.WorkoutValue}>01:23:45</Text>
-                </View>
-                <View>
-                    <Text>Distance:</Text>
-                    <Text style={styles.WorkoutValue}>{workoutProps.data.distance + " km"}</Text>
-                </View>
-            </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
-                <View>
-                    <Text>Current Speed:</Text>
-                    <Text style={styles.WorkoutValue}>12 km/h</Text>
-                </View>
-                <View>
-                    <Text>Average Speed:</Text>
-                    <Text style={styles.WorkoutValue}>8 km/h</Text>
-                </View>
-            </View>
-        </View>
+            </ThemedText>
+            <ThemedContainer style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                <ThemedContainer>
+                    <ThemedText>Duration:</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>01:23:45</ThemedText>
+                </ThemedContainer>
+                <ThemedContainer>
+                    <ThemedText>Distance:</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance + " km"}</ThemedText>
+                </ThemedContainer>
+            </ThemedContainer>
+            <ThemedContainer style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                <ThemedContainer>
+                    <ThemedText>Current Speed:</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>12 km/h</ThemedText>
+                </ThemedContainer>
+                <ThemedContainer>
+                    <ThemedText>Average Speed:</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>8 km/h</ThemedText>
+                </ThemedContainer>
+            </ThemedContainer>
+        </ThemedContainer>
     )
 }
 
@@ -59,7 +62,6 @@ const styles = StyleSheet.create({
         marginTop:15,
         padding: 10,
         borderRadius: 5,
-        backgroundColor: "lightgray",
 
         shadowColor: "#000",
         shadowOffset: {
