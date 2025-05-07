@@ -1,22 +1,26 @@
 import React from "react";
 import { Friend } from "@/app/(tabs)/friendsList"
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, useColorScheme } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import ThemedThouchable from "./ThemedTouchable";
 import ThemedText from "./ThemedText";
+import { Colors } from "@/constants/colors";
 
 type FriendProps = {
     data: Friend;
 };
 
 const FriendContainer = (friendProps: FriendProps) => {
+    const colorScheme = useColorScheme();
+    const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+
     return (
         <ThemedThouchable style={styles.FriendContainer}>
             <Image
                 source={friendProps.data.profilePic}
                 style={styles.image}
             />
-            <ThemedText style={styles.FriendName}>
+            <ThemedText style={[styles.FriendName, {color: theme.textAccent,}]}>
                 {friendProps.data.name}
             </ThemedText>
         </ThemedThouchable>
@@ -38,12 +42,13 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.3,
         shadowRadius: 1,
-        
+
         elevation: 2,
     },
     FriendName: {
         flexGrow: 1,
         fontSize: 35,
+        fontWeight: "300",
     },
 
     image: {

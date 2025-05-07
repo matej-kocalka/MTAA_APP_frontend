@@ -1,13 +1,28 @@
+import { Colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
-import { Button } from "react-native";
+import { Button, useColorScheme } from "react-native";
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme ? Colors[colorScheme] : Colors.light;
   return (
     <Tabs
 
       screenOptions={{
+        tabBarStyle: {
+          borderTopColor:theme.borderColor,
+          shadowOpacity:0,
+          backgroundColor: theme.tabsBackground, // 👈 Set your desired background color
+        },
+        tabBarActiveTintColor: theme.accentColor,
+        tabBarInactiveTintColor: '#888',
+
+        headerStyle: {
+          backgroundColor: theme.tabsBackground, // 👈 Top bar background color
+        },
+        headerTintColor: theme.headerColor,
       }}>
       <Tabs.Screen
         name="workoutList"

@@ -1,6 +1,7 @@
 import { WorkoutContainer } from "@/components/workout";
+import { Colors } from "@/constants/colors";
 import { useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, useColorScheme, View } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 export type Workout = {
@@ -37,10 +38,11 @@ export default function WorkoutList() {
             distance: 0, // Distance could be 0 for non-distance-based activities
         },
     ]);
-
+    const colorScheme = useColorScheme();
+    const theme = colorScheme ? Colors[colorScheme] : Colors.light;
     // const [workouts, setWorkouts] = useState<Workout[]>([])
     return (
-        <View style={{ flexGrow: 1 }}>
+        <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
             <FlatList<Workout>
                 contentInsetAdjustmentBehavior="automatic"
                 data={workouts}
