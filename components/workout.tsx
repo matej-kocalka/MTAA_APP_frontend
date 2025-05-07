@@ -1,19 +1,24 @@
 import React from "react";
 import { Workout } from "@/app/(tabs)/workoutList"
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, Text, useColorScheme } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import ThemedThouchable from "./ThemedTouchable";
 import ThemedText from "./ThemedText";
 import ThemedContainer from "./ThemedContainer";
+import { Colors } from "@/constants/colors";
 
 type WorkoutProps = {
     data: Workout;
 };
 
+
 const WorkoutContainer = (workoutProps: WorkoutProps) => {
+    const colorScheme = useColorScheme();
+    const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+
     return (
         <ThemedThouchable style={styles.WorkoutContainer}>
-            <ThemedText style={styles.WorkoutName}>
+            <ThemedText style={[styles.WorkoutName, {color: theme.textAccent,}]}>
                 {workoutProps.data.name}
             </ThemedText>
             <ThemedText style={{}}>
@@ -27,58 +32,62 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
 };
 
 const WorkoutInfoBox = (workoutProps: WorkoutProps) => {
+    const colorScheme = useColorScheme();
+    const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+
     return (
         <ThemedContainer style={styles.WorkoutContainer}>
-            <ThemedText style={styles.WorkoutName}>
+            <ThemedText style={[styles.WorkoutName, {color: theme.textAccent,}]}>
                 {workoutProps.data.name}
             </ThemedText>
-            <ThemedContainer style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
-                <ThemedContainer>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                <View>
                     <ThemedText>Duration:</ThemedText>
                     <ThemedText style={styles.WorkoutValue}>01:23:45</ThemedText>
-                </ThemedContainer>
-                <ThemedContainer>
+                </View>
+                <View>
                     <ThemedText>Distance:</ThemedText>
                     <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance + " km"}</ThemedText>
-                </ThemedContainer>
-            </ThemedContainer>
-            <ThemedContainer style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
-                <ThemedContainer>
+                </View>
+            </View>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                <View>
                     <ThemedText>Current Speed:</ThemedText>
                     <ThemedText style={styles.WorkoutValue}>12 km/h</ThemedText>
-                </ThemedContainer>
-                <ThemedContainer>
+                </View>
+                <View>
                     <ThemedText>Average Speed:</ThemedText>
                     <ThemedText style={styles.WorkoutValue}>8 km/h</ThemedText>
-                </ThemedContainer>
-            </ThemedContainer>
+                </View>
+            </View>
         </ThemedContainer>
     )
 }
 
 const styles = StyleSheet.create({
     WorkoutContainer: {
-        marginInline:15,
-        marginTop:15,
+        marginInline: 15,
+        marginTop: 15,
         padding: 10,
         borderRadius: 5,
 
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 3
+            height: 1
         },
         shadowOpacity: 0.3,
         shadowRadius: 2,
-        elevation: 4,
+        elevation: 2,
     },
     WorkoutName: {
         fontSize: 30,
-
+        fontWeight: "300",
     },
 
     WorkoutValue: {
         fontSize: 35,
+        fontWeight: "300",
     }
 });
 

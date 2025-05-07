@@ -1,6 +1,7 @@
 import FriendContainer from "@/components/friend";
+import { Colors } from "@/constants/colors";
 import { useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, useColorScheme, View } from "react-native";
 
 export type Friend = {
     id: number;
@@ -33,10 +34,11 @@ export default function FriendList() {
             profilePic: require('../../assets/images/favicon.png'),
         },
     ]);
-
+    const colorScheme = useColorScheme();
+    const theme = colorScheme ? Colors[colorScheme] : Colors.light;
     // const [friends, setWorkouts] = useState<Friend[]>([])
     return (
-        <View style={{ flexGrow: 1}}>
+        <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
             <FlatList<Friend>
                 contentInsetAdjustmentBehavior="automatic"
                 data={friends}
