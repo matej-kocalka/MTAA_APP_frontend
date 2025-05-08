@@ -1,7 +1,9 @@
 import FriendContainer from "@/components/friend";
+import ThemedButton from "@/components/ThemedButton";
 import { Colors } from "@/constants/colors";
-import { useState } from "react";
-import { FlatList, useColorScheme, View } from "react-native";
+import { useNavigation } from "expo-router";
+import { useLayoutEffect, useState } from "react";
+import { FlatList, TouchableOpacity, useColorScheme, View, Text } from "react-native";
 
 export type Friend = {
     id: number;
@@ -12,6 +14,24 @@ export type Friend = {
 
 
 export default function FriendList() {
+    const navigation = useNavigation();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity style={{
+                    backgroundColor: theme.secondaryAccent,
+                    padding: 5,
+                    borderRadius: 5,
+                    marginRight: 15,
+                }} onPress={() => alert('To be completed')}>
+                    <Text style={{
+                        color: theme.buttonTextColor,
+                        fontWeight: 'bold',
+                    }}> Add friends </Text></TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
+
     const [friends, setFriends] = useState<Friend[]>([  //Dummy friends
         {
             id: 1,

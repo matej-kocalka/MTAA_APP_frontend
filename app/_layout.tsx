@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/context/AuthContext";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { Platform, StatusBar } from "react-native";
@@ -11,8 +12,10 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-    </Stack>
+    <AuthProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </AuthProvider>
   );
 }

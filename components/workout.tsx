@@ -17,7 +17,7 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
 
     return (
-        <ThemedThouchable style={styles.WorkoutContainer}>
+        <ThemedThouchable>
             <ThemedText style={[styles.WorkoutName, {color: theme.textAccent,}]}>
                 {workoutProps.data.name}
             </ThemedText>
@@ -36,7 +36,7 @@ const WorkoutInfoBox = (workoutProps: WorkoutProps) => {
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
 
     return (
-        <ThemedContainer style={styles.WorkoutContainer}>
+        <ThemedContainer>
             <ThemedText style={[styles.WorkoutName, {color: theme.textAccent,}]}>
                 {workoutProps.data.name}
             </ThemedText>
@@ -65,21 +65,6 @@ const WorkoutInfoBox = (workoutProps: WorkoutProps) => {
 }
 
 const styles = StyleSheet.create({
-    WorkoutContainer: {
-        marginInline: 15,
-        marginTop: 15,
-        padding: 10,
-        borderRadius: 5,
-
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 1
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 2,
-        elevation: 2,
-    },
     WorkoutName: {
         fontSize: 30,
         fontWeight: "300",

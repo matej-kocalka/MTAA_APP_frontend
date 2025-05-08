@@ -1,3 +1,5 @@
+import ThemedButton from "@/components/ThemedButton";
+import ThemedContainer from "@/components/ThemedContainer";
 import { WorkoutContainer, WorkoutInfoBox } from "@/components/workout";
 import { Colors } from "@/constants/colors";
 import { useNavigation } from "expo-router";
@@ -43,20 +45,6 @@ export default function currentWorkout() {
     const styles = StyleSheet.create({
         map: {
             height: 350,
-            marginInline: 15,
-            marginTop: 15,
-            padding: 10,
-            borderRadius: 5,
-            backgroundColor: theme.containerColor,
-
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 1,
-            },
-            shadowOpacity: 0.3,
-            shadowRadius: 2,
-            elevation: 2,
         },
 
         modalView: {
@@ -86,12 +74,11 @@ export default function currentWorkout() {
             color: theme.textColor,
         },
         input: {
-            borderWidth: 1,
-            borderColor: '#ccc',
             padding: 10,
             marginBottom: 10,
             borderRadius: 5,
             color: theme.textColor,
+            backgroundColor: theme.tabsBackground,
         },
         buttonRow: {
             flexDirection: 'row',
@@ -110,21 +97,6 @@ export default function currentWorkout() {
             textAlign: "center",
             flexGrow: 1
         },
-        button: {
-            backgroundColor: theme.secondaryAccent,
-            paddingVertical: 10,
-            paddingHorizontal: 15,
-            borderRadius: 5,
-            margin: 15,
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 1,
-            },
-            shadowOpacity: 0.3,
-            shadowRadius: 2,
-            elevation: 2,
-        },
 
         topBarButton: {
             backgroundColor: theme.secondaryAccent,
@@ -137,13 +109,11 @@ export default function currentWorkout() {
     return (
 
         <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
-            <View style={styles.map}>
+            <ThemedContainer style={styles.map}>
                 <Text>Map placeholder</Text>
-            </View>
+            </ThemedContainer>
             <WorkoutInfoBox data={currentWorkout} />
-            <TouchableOpacity style={styles.button} onPress={() => setVisible(true)}>
-                <Text style={styles.buttonText}>Add friend</Text>
-            </TouchableOpacity>
+            <ThemedButton onPress={() => setVisible(true)}>Add friend</ThemedButton>
 
             <Modal
                 visible={visible}
