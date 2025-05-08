@@ -1,0 +1,21 @@
+import axios from 'axios';
+import { API_URL } from '@/constants/api';
+
+class AuthService {
+  async login(email: string, password: string) {
+    const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+    return response.data; //returns JWT token and user_id
+  }
+
+  async getUser(token: string) {
+    const response = await axios.get(`${API_URL}/auth/getuser`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+
+  }
+}
+
+export default new AuthService();

@@ -11,6 +11,7 @@ export const Colors = {
         tabsBackground: "rgb(36, 36, 36)",
         borderColor: "rgb(51, 51, 51)",
         buttonTextColor: "white",
+        deleteButton: "rgb(145, 1, 1)",
     },
     light: {
         backgroundColor: "rgb(247, 247, 247)",
@@ -24,5 +25,6 @@ export const Colors = {
         tabsBackground: "rgba(255, 255, 255, 1)",
         borderColor: "rgb(207, 207, 207)",
         buttonTextColor: "white",
+        deleteButton: "rgb(202, 0, 0)",
     }
 }

@@ -1,7 +1,7 @@
 import WorkoutDataContainer from "@/components/workoutData";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Link, Stack } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,11 +11,65 @@ import {
   TouchableOpacity,
   Text,
   View,
+  Alert,
+  useColorScheme,
 } from "react-native";
-
+import { AuthContext } from "@/context/AuthContext";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import ThemedButton from "@/components/ThemedButton";
+import { Colors } from "@/constants/colors";
+import ThemedContainer from "@/components/ThemedContainer";
 
 export default function Index() {
-  const [input, setInput] = useState("");
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const auth = useContext(AuthContext);
+  const colorScheme = useColorScheme();
+  const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+
+
+  const handleLogin = async () => {
+    try {
+      await auth?.login(email, password);
+      router.push("/(tabs)/profile")
+    } catch (e) {
+      console.log(e)
+      Alert.alert('Login failed', 'Invalid credentials');
+    }
+  };
+
+  const styles = StyleSheet.create({
+    input: {
+      fontSize: 16,
+      padding: 10,
+
+    },
+    inputContainer: {
+      fontSize: 17,
+      borderWidth: 0,
+      borderColor: '#ccc',
+      padding: 10,
+      marginBottom: 10,
+      borderRadius: 5,
+      color: theme.textColor,
+      backgroundColor: theme.tabsBackground,
+      margin: 15,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 1
+      },
+      shadowOpacity: 0.3,
+      shadowRadius: 1,
+      elevation: 2,
+    },
+    buttonText: {
+      fontSize: 16,
+    }
+  });
+
   return (
     /*<View style={{ flex: 1, paddingTop: 10, flexDirection: "column", alignContent: "center"}}>
       
@@ -23,65 +77,45 @@ export default function Index() {
         "Password:"
       </Text>
     </View>*/
-    <View style={{flex: 1, flexDirection: "column", justifyContent: "center"}}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            value={input}
-            autoCorrect={false}
-            onChangeText={setInput}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={input}
-            autoCorrect={false}
-            onChangeText={setInput}
-          />
-        </View>
-        <View style={{alignItems: "center"}}>
-          <Link href="/workoutList" asChild style={{justifyContent:"center"}}>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>Login</Text>
-            </Pressable>
-          </Link>
-          <Link href="/workoutList" asChild>
-            <Pressable style={styles.button}>
-              <Text style={styles.buttonText}>Register</Text>
-            </Pressable>
-          </Link>
-        </View>
+
+    // <View style={{flex: 1, flexDirection: "column", justifyContent: "center"}}>
+    //     <View style={styles.inputContainer}>
+    //       <TextInput
+    //         style={styles.input}
+    //         placeholder="Username"
+    //         value={email}
+    //         autoCorrect={false}
+    //         onChangeText={setEmail}
+    //       />
+    //     </View>
+    //     <View style={styles.inputContainer}>
+    //       <TextInput
+    //         style={styles.input}
+    //         placeholder="Password"
+    //         value={password}
+    //         autoCorrect={false}
+    //         onChangeText={setPassword}
+    //       />
+    //     </View>
+    //     <View style={{alignItems: "center"}}>
+    //       <View style={{justifyContent:"center"}}>
+    //         <Pressable style={styles.button} onPress={handleLogin}>
+    //           <Text style={styles.buttonText}>Login</Text>
+    //         </Pressable>
+    //       </View>
+    //       <Link href="/workoutList" asChild>
+    //         <Pressable style={styles.button}>
+    //           <Text style={styles.buttonText}>Register</Text>
+    //         </Pressable>
+    //       </Link>
+    //     </View>
+    //   </View>
+    <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 ,justifyContent:"center", alignItems:"center"}}>
+      <View style={{paddingBottom:100, width:300}}>
+        <TextInput style={styles.inputContainer} placeholder="Email" value={email} onChangeText={setEmail} />
+        <TextInput style={styles.inputContainer} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
+        <ThemedButton onPress={handleLogin}>Login</ThemedButton>
       </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    fontSize: 16,
-    padding:10,
-  },
-  inputContainer: {
-    margin: 20,
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: "#ffffff",
-    borderColor: "#aaaaaa",
-  },
-  button: {
-    margin:5,
-    width: 100,
-    height: 30,
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: "#ffffff",
-    borderColor: "#aaaaaa",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  buttonText: {
-    fontSize: 16,
-  }
-});

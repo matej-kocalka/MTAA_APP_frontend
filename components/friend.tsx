@@ -1,7 +1,6 @@
 import React from "react";
 import { Friend } from "@/app/(tabs)/friendsList"
 import { StyleSheet, Image, useColorScheme } from "react-native";
-import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import ThemedThouchable from "./ThemedTouchable";
 import ThemedText from "./ThemedText";
 import { Colors } from "@/constants/colors";
@@ -20,7 +19,7 @@ const FriendContainer = (friendProps: FriendProps) => {
                 source={friendProps.data.profilePic}
                 style={styles.image}
             />
-            <ThemedText style={[styles.FriendName, {color: theme.textAccent,}]}>
+            <ThemedText style={[styles.FriendName, { color: theme.textAccent, }]}>
                 {friendProps.data.name}
             </ThemedText>
         </ThemedThouchable>
@@ -31,20 +30,9 @@ const styles = StyleSheet.create({
     FriendContainer: {
         flexDirection: "row",
         alignItems: "center",
-        marginInline: 15,
-        marginTop: 15,
         padding: 12,
-        borderRadius: 5,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 1,
-
-        elevation: 2,
     },
+    
     FriendName: {
         flexGrow: 1,
         fontSize: 35,
@@ -52,11 +40,19 @@ const styles = StyleSheet.create({
     },
 
     image: {
-        borderWidth: 1,
+        backgroundColor: "white",
         borderRadius: 40,
         width: 80,
         height: 80,
-        marginRight: 20
+        marginRight: 20,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 1,
+        elevation: 2,
     }
 
 });

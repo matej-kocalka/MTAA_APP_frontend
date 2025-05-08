@@ -2420,6 +2420,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-async-storage/async-storage@npm:2.1.2":
+  version: 2.1.2
+  resolution: "@react-native-async-storage/async-storage@npm:2.1.2"
+  dependencies:
+    merge-options: "npm:^3.0.4"
+  peerDependencies:
+    react-native: ^0.0.0-0 || >=0.65 <1.0
+  checksum: 10c0/8f3d6ff1b32ef8705c5c8be8248988cfbfd571c0e8142b8aef15429f13ddc9a018792b4be837215f6592c76b9cd99a931d4f0ab4182eebd8bddede458d484053
+  languageName: node
+  linkType: hard
+
 "@react-native/assets-registry@npm:0.79.2":
   version: 0.79.2
   resolution: "@react-native/assets-registry@npm:0.79.2"
@@ -4009,6 +4020,17 @@ __metadata:
   dependencies:
     follow-redirects: "npm:^1.10.0"
   checksum: 10c0/8633cce2dbe64acdfb82a73ba9c916e4d30eff00cb5ac697be859af9446843944cc663c4aafac1da6a43328aeb6fe778a372841fda27e2af44cdd36dba83b2a4
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.9.0":
+  version: 1.9.0
+  resolution: "axios@npm:1.9.0"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/9371a56886c2e43e4ff5647b5c2c3c046ed0a3d13482ef1d0135b994a628c41fbad459796f101c655e62f0c161d03883454474d2e435b2e021b1924d9f24994c
   languageName: node
   linkType: hard
 
@@ -7044,7 +7066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.10.0":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.10.0, follow-redirects@npm:^1.15.6":
   version: 1.15.9
   resolution: "follow-redirects@npm:1.15.9"
   peerDependenciesMeta:
@@ -8367,6 +8389,13 @@ __metadata:
   version: 3.0.3
   resolution: "is-path-inside@npm:3.0.3"
   checksum: 10c0/cf7d4ac35fb96bab6a1d2c3598fe5ebb29aafb52c0aaa482b5a3ed9d8ba3edc11631e3ec2637660c44b3ce0e61a08d54946e8af30dec0b60a7c27296c68ffd05
+  languageName: node
+  linkType: hard
+
+"is-plain-obj@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "is-plain-obj@npm:2.1.0"
+  checksum: 10c0/e5c9814cdaa627a9ad0a0964ded0e0491bfd9ace405c49a5d63c88b30a162f1512c069d5b80997893c4d0181eadc3fed02b4ab4b81059aba5620bfcdfdeb9c53
   languageName: node
   linkType: hard
 
@@ -9925,6 +9954,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"merge-options@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "merge-options@npm:3.0.4"
+  dependencies:
+    is-plain-obj: "npm:^2.1.0"
+  checksum: 10c0/02b5891ceef09b0b497b5a0154c37a71784e68ed71b14748f6fd4258ffd3fe4ecd5cb0fd6f7cae3954fd11e7686c5cb64486daffa63c2793bbe8b614b61c7055
+  languageName: node
+  linkType: hard
+
 "merge-stream@npm:^2.0.0":
   version: 2.0.0
   resolution: "merge-stream@npm:2.0.0"
@@ -10473,12 +10511,14 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@expo/vector-icons": "npm:^14.0.2"
     "@maplibre/maplibre-react-native": "npm:^10.1.4"
+    "@react-native-async-storage/async-storage": "npm:2.1.2"
     "@react-navigation/bottom-tabs": "npm:^7.2.0"
     "@react-navigation/native": "npm:^7.0.14"
     "@types/jest": "npm:^29.5.12"
     "@types/react": "npm:~19.0.10"
     "@types/react-native": "npm:^0.73.0"
     "@types/react-test-renderer": "npm:^18.3.0"
+    axios: "npm:^1.9.0"
     expo: "npm:^53.0.7"
     expo-cli: "npm:6.3.10"
     expo-dev-client: "npm:^5.1.8"
@@ -11968,6 +12008,13 @@ __metadata:
     forwarded: "npm:0.2.0"
     ipaddr.js: "npm:1.9.1"
   checksum: 10c0/c3eed999781a35f7fd935f398b6d8920b6fb00bbc14287bc6de78128ccc1a02c89b95b56742bf7cf0362cc333c61d138532049c7dedc7a328ef13343eff81210
+  languageName: node
+  linkType: hard
+
+"proxy-from-env@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "proxy-from-env@npm:1.1.0"
+  checksum: 10c0/fe7dd8b1bdbbbea18d1459107729c3e4a2243ca870d26d34c2c1bcd3e4425b7bcc5112362df2d93cc7fb9746f6142b5e272fd1cc5c86ddf8580175186f6ad42b
   languageName: node
   linkType: hard
 
