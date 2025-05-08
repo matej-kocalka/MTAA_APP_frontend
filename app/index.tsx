@@ -16,10 +16,8 @@ import {
 } from "react-native";
 import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import ThemedButton from "@/components/ThemedButton";
 import { Colors } from "@/constants/colors";
-import ThemedContainer from "@/components/ThemedContainer";
 
 export default function Index() {
   const router = useRouter();
@@ -33,7 +31,7 @@ export default function Index() {
   const handleLogin = async () => {
     try {
       await auth?.login(email, password);
-      router.push("/(tabs)/profile")
+      router.push("/(tabs)/workoutList")
     } catch (e) {
       console.log(e)
       Alert.alert('Login failed', 'Invalid credentials');
@@ -116,6 +114,7 @@ export default function Index() {
         <TextInput style={styles.inputContainer} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
         <ThemedButton onPress={handleLogin}>Login</ThemedButton>
       </View>
+      <Link href="/workoutList"><Text style={{color: "gray"}}>Bypass login</Text></Link>
     </View>
   );
 }
