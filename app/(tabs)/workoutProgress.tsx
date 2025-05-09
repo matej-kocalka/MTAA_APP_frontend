@@ -3,39 +3,80 @@ import ThemedContainer from "@/components/ThemedContainer";
 import { WorkoutContainer, WorkoutInfoBox } from "@/components/workout";
 import { Colors } from "@/constants/colors";
 import { useNavigation } from "expo-router";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, SafeAreaView, Pressable, TextInput, Button, useColorScheme } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import Workout from "@/models/Workout";
+// import WorkoutManager from "@/managers/WorkoutManager";
+import useAuth from "@/hooks/useAuth";
+import { WorkoutContext } from "@/context/WorkoutContext";
+import ThemedView from "@/components/ThemedView";
+import ThemedText from "@/components/ThemedText";
+import { Ionicons } from "@expo/vector-icons";
 
-export type Workout = {
+export type WorkoutProgress = {
     id: number;
     name: string;
     date: Date;
-    distance: Float;
+    distance: number;
+    duration: string;
+    current_speed: number;
+    steps: number;
 };
 
 export default function currentWorkout() {
-    const currentWorkout: Workout =
+    let preset: WorkoutProgress =
     {
         id: 1,
-        name: "Morning Run",
-        date: new Date('2025-04-20T07:00:00'),
-        distance: 5.0,
+        name: "New Workout",
+        date: new Date(),
+        distance: 0.0,
+        duration: "00:00:00",
+        current_speed: 12,
+        steps: 0,
     };
 
-    const navigation = useNavigation();
+    const auth = useAuth();
+    const workoutManager = useContext(WorkoutContext);
+    const [isWorkout, setWorkout] = useState(false);
+    const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset)
 
+    const handleWorkoutStart = () => {
+        try { workoutManager!.startNewWorkout(0, "New workout", auth.user) } catch (e) { console.log(e); }
+        setWorkout(true);
+    };
+
+    const handleWorkoutStop = () => {
+        workoutManager!.finishWorkout();
+        setWorkoutProgress(preset);
+        setWorkout(false);
+    };
+
+    useEffect(() => {   // refreshing
+        const interval = setInterval(() => {
+            let wp = workoutManager!.getWorkoutProgress(auth.user);
+            if (wp) {
+                setWorkoutProgress(wp);
+            }
+        }, 1000);
+
+        return () => clearInterval(interval); // Clean up on unmount
+    }, []);
+
+
+
+    const navigation = useNavigation(); //Top bar button
     useLayoutEffect(() => {
         navigation.setOptions({
-            headerRight: () => (
-                <TouchableOpacity style={styles.topBarButton} onPress={() => alert('To be completed')}
-                ><Text style={{
-                    color: theme.buttonTextColor,
-                    fontWeight: 'bold',
-                }}>Finish Workout</Text></TouchableOpacity>
-            ),
+            headerRight: isWorkout ? () => (
+                <TouchableOpacity style={styles.topBarButton} onPress={handleWorkoutStop}>
+                    <Text style={{
+                        color: theme.buttonTextColor,
+                        fontWeight: 'bold',
+                    }}>Finish Workout</Text></TouchableOpacity>
+            ) : undefined,
         });
-    }, [navigation]);
+    }, [navigation, isWorkout]);
 
     const [visible, setVisible] = useState(false);
     const [name, setName] = useState('');
@@ -106,47 +147,60 @@ export default function currentWorkout() {
         }
     })
 
-    return (
+    if (isWorkout) {
+        return (
+            <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
+                <ThemedContainer style={styles.map}>
+                    <Text>Map placeholder</Text>
+                </ThemedContainer>
+                <WorkoutInfoBox data={workoutProgress!} />
+                <ThemedButton onPress={() => setVisible(true)}>Add friend</ThemedButton>
 
-        <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
-            <ThemedContainer style={styles.map}>
-                <Text>Map placeholder</Text>
-            </ThemedContainer>
-            <WorkoutInfoBox data={currentWorkout} />
-            <ThemedButton onPress={() => setVisible(true)}>Add friend</ThemedButton>
+                <Modal
+                    visible={visible}
+                    animationType="slide"
+                    transparent={true}
+                    onRequestClose={() => setVisible(false)}
+                >
+                    <View style={styles.modalBackground}>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.title}>Add friend to Workout</Text>
 
-            <Modal
-                visible={visible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={() => setVisible(false)}
-            >
-                <View style={styles.modalBackground}>
-                    <View style={styles.modalContainer}>
-                        <Text style={styles.title}>Add friend to Workout</Text>
-
-                        <TextInput
-                            placeholder=""
-                            value={name}
-                            onChangeText={setName}
-                            style={styles.input}
-                        />
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                style={[styles.modalButton, { backgroundColor: 'gray' }]}
-                                onPress={() => setVisible(false)}
-                            >
-                                <Text style={styles.buttonText}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.modalButton}>
-                                <Text style={styles.buttonText}>Send request</Text>
-                            </TouchableOpacity>
+                            <TextInput
+                                placeholder=""
+                                value={name}
+                                onChangeText={setName}
+                                style={styles.input}
+                            />
+                            <View style={styles.buttonRow}>
+                                <TouchableOpacity
+                                    style={[styles.modalButton, { backgroundColor: 'gray' }]}
+                                    onPress={() => setVisible(false)}
+                                >
+                                    <Text style={styles.buttonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.modalButton}>
+                                    <Text style={styles.buttonText}>Send request</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </Modal>
-        </ScrollView>
-    )
+                </Modal>
+            </ScrollView>
+        )
+    }
+    else {
+        return (
+            <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
+                <ThemedContainer>
+                    <View style={{ alignItems: "center", margin: 30 }}><Ionicons name="walk" size={100} color={theme.accentColor} /></View>
+                    <ThemedText style={{ textAlign: "center", fontSize: 20, margin: 10 }}>No active workout</ThemedText>
+                    <ThemedButton style={{ marginBottom: 15, }} onPress={handleWorkoutStart}>Start Workout</ThemedButton>
+                </ThemedContainer>
+
+            </View>
+        )
+    }
 
 }
 

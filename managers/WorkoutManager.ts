@@ -1,0 +1,117 @@
+import { Pedometer } from 'expo-sensors';
+import User from "@/models/User";
+import Workout from "@/models/Workout";
+import WorkoutDataSample from "@/models/WorkoutDataSample";
+import WorkoutParticipant from "@/models/WorkoutParticipant";
+
+export default class WorkoutManager {
+    private currentUser: User | null = null;
+    private currentWorkout: Workout | null = null;
+    private pedometerSubscription: any = null;
+    private currentParticipant: WorkoutParticipant | null = null;
+
+    startNewWorkout(w_id: number, name: string, user: User | null) {
+        if (!this.currentWorkout) {
+            let participants: WorkoutParticipant[] = [];
+            let sample: WorkoutDataSample[] = [];
+            if (user) {
+                this.currentUser = user;
+                this.currentParticipant = new WorkoutParticipant(user, 0, 0, 0, 0, 0, sample)
+                participants.push(this.currentParticipant);
+                this.currentWorkout = new Workout(w_id, name, new Date(), participants);
+
+                this.startPedometerTracking();
+
+                return this.currentWorkout;
+            } else {
+                throw new Error('Workout participant is null');
+            }
+        } else {
+            throw new Error('Workout running');
+        }
+    }
+
+    finishWorkout() {
+        this.stopPedometerTracking();
+        this.currentWorkout = null;
+        this.currentParticipant = null;
+    }
+
+    getCurrentWorkout(): Workout | null {
+        return this.currentWorkout;
+    }
+
+    getParticipant(user: User | null): WorkoutParticipant | null {
+        if (user) {
+            const participant = this.currentWorkout!.participants.find(u => u.user.id === user.id);
+            if (participant) {
+                return participant;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    getWorkoutProgress(user: User | null) {
+        type WorkoutProgress = {
+            id: number;
+            name: string;
+            date: Date;
+            distance: number;
+            duration: string;
+            current_speed: number;
+            steps: number;
+        };
+        if (this.currentWorkout) {
+            if (user) {
+                const participant = this.currentWorkout!.participants.find(u => u.user.id === user.id);
+                if (participant) {
+                    const elapsedMs: number = (new Date()).getTime() - this.currentWorkout!.start.getTime();
+                    const hours: number = Math.floor(elapsedMs / (1000 * 60 * 60));
+                    const minutes: number = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds: number = Math.floor((elapsedMs % (1000 * 60)) / 1000);
+
+                    const duration: string = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                    const progress: WorkoutProgress = {
+                        id: this.currentWorkout!.w_id,
+                        name: this.currentWorkout!.name,
+                        date: this.currentWorkout!.start,
+                        distance: participant.total_distance,
+                        duration: duration,
+                        current_speed: participant.current_speed,
+                        steps: participant.steps,
+                    }
+                    return progress;
+                }
+            }
+        }
+    }
+
+    addParticipant(user: User) {
+        let sample: WorkoutDataSample[] = [];
+        this.currentWorkout?.participants.push(new WorkoutParticipant(user, 0, 0, 0, 0, 0, sample));
+    }
+
+
+    // Start tracking pedometer data and adding it to the workout session
+    startPedometerTracking() {
+        if (this.currentWorkout) {
+            this.pedometerSubscription = Pedometer.watchStepCount((result) => {
+                this.currentParticipant!.steps = result.steps // Add step data to the workout
+            });
+        } else {
+            console.error('Start a workout session first.');
+        }
+    }
+
+    // Stop tracking pedometer data
+    stopPedometerTracking() {
+        if (this.pedometerSubscription) {
+            this.pedometerSubscription.remove(); // Stop the subscription to the pedometer updates
+            this.pedometerSubscription = null;
+        }
+    }
+}

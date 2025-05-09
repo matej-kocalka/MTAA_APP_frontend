@@ -1,5 +1,6 @@
 import React from "react";
 import { Workout } from "@/app/(tabs)/workoutList"
+import { WorkoutProgress } from "@/app/(tabs)/workoutProgress"
 import { StyleSheet, View, Text, useColorScheme } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import ThemedThouchable from "./ThemedTouchable";
@@ -9,6 +10,10 @@ import { Colors } from "@/constants/colors";
 
 type WorkoutProps = {
     data: Workout;
+};
+
+type WorkoutPropsProgress = {
+    data: WorkoutProgress;
 };
 
 
@@ -31,7 +36,7 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
     );
 };
 
-const WorkoutInfoBox = (workoutProps: WorkoutProps) => {
+const WorkoutInfoBox = (workoutProps: WorkoutPropsProgress) => {
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
 
@@ -43,21 +48,21 @@ const WorkoutInfoBox = (workoutProps: WorkoutProps) => {
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <View>
                     <ThemedText>Duration:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>01:23:45</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.duration}</ThemedText>
                 </View>
                 <View>
-                    <ThemedText>Distance:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance + " km"}</ThemedText>
+                    <ThemedText style={{textAlign:"right"}}>Distance:</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, {textAlign:"right"}]}>{workoutProps.data.distance + " km"}</ThemedText>
                 </View>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <View>
                     <ThemedText>Current Speed:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>12 km/h</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance + " km/h"}</ThemedText>
                 </View>
                 <View>
-                    <ThemedText>Average Speed:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>8 km/h</ThemedText>
+                    <ThemedText style={{textAlign:"right"}}>Steps:</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, {textAlign:"right"}]}>{workoutProps.data.steps}</ThemedText>
                 </View>
             </View>
         </ThemedContainer>

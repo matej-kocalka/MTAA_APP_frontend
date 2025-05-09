@@ -49,7 +49,7 @@ export default function Index() {
       borderWidth: 0,
       borderColor: '#ccc',
       padding: 10,
-      marginBottom: 0,
+      marginBottom: 10,
       borderRadius: 5,
       color: theme.textColor,
       backgroundColor: theme.tabsBackground,
