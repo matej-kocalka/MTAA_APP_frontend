@@ -1,11 +1,12 @@
 import { router } from "expo-router";
 import React, { useContext } from "react";
-import { Image, View, StyleSheet, useColorScheme, ScrollView } from "react-native";
+import { Image, View, StyleSheet, useColorScheme, ScrollView, TouchableOpacity } from "react-native";
 import { AuthContext } from "@/context/AuthContext";
 import ThemedContainer from "@/components/ThemedContainer";
 import ThemedButton from "@/components/ThemedButton";
 import ThemedText from "@/components/ThemedText";
 import { Colors } from "@/constants/colors";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function RootLayout() {
   const auth = useContext(AuthContext);
@@ -15,7 +16,7 @@ export default function RootLayout() {
   const handleLogout = async () => {
     try {
       await auth?.logout();
-      router.push("../../")
+      // router.replace("/login")
     } catch (e) {
       console.log(e)
       // Alert.alert('Login failed', 'Invalid credentials');
@@ -50,6 +51,14 @@ export default function RootLayout() {
       marginBottom: 20,
       fontSize: 15,
       fontWeight: "normal",
+    },
+
+    changeButtons:{
+      flexDirection:"row",
+      alignItems:"center",
+      borderBottomColor:theme.backgroundColor,
+      borderBottomWidth:1,
+      padding: 15,
     }
   });
 
@@ -60,12 +69,14 @@ export default function RootLayout() {
         <ThemedText style={styles.username}>{auth?.user?.username}</ThemedText>
         <ThemedText style={styles.email}>{auth?.user?.email}</ThemedText>
       </ThemedContainer>
-      <ThemedButton >Change username</ThemedButton>
-      <ThemedButton >Change password</ThemedButton>
-      <ThemedButton >Change image</ThemedButton>
-      <ThemedButton onPress={handleLogout}>Log out</ThemedButton>
-
-      <ThemedButton style={{marginTop:30, backgroundColor: theme.deleteButton}}onPress={handleLogout}>Delete profile</ThemedButton>
+      <ThemedContainer style={{padding:0}}>
+        <TouchableOpacity style={styles.changeButtons}><Ionicons name="person-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Change username</ThemedText></TouchableOpacity>
+        <TouchableOpacity style={styles.changeButtons}><Ionicons name="lock-closed-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Change password</ThemedText></TouchableOpacity>
+        <TouchableOpacity style={styles.changeButtons}><Ionicons name="image-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Change image</ThemedText></TouchableOpacity>
+        <TouchableOpacity style={styles.changeButtons} onPress={handleLogout}><Ionicons name="log-out-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Log out</ThemedText></TouchableOpacity>
+        <TouchableOpacity style={[styles.changeButtons, {borderBottomWidth: 0}]}><Ionicons name="trash-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Delete profile</ThemedText></TouchableOpacity>
+      </ThemedContainer>
+      
     </ScrollView>
   );
 }

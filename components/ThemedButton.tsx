@@ -18,7 +18,8 @@ const ThemedButton = ({ style, children, ...props }: ThemedButtonProps) => {
             color: theme.buttonTextColor,
             fontWeight: 'bold',
             textAlign: "center",
-            flexGrow: 1
+            flexGrow: 1,
+            alignContent:"center"
         },
         Button: {
             backgroundColor: theme.secondaryAccent,
