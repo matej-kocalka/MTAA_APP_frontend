@@ -2,6 +2,9 @@ import { StyleSheet, StyleProp, useColorScheme, ViewStyle } from "react-native";
 import { Colors } from "@/constants/colors";
 
 import { TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
+
+const router = useRouter();
 
 type ThemedTouchableProps = {
   style?: StyleProp<ViewStyle>;

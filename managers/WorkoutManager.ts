@@ -6,6 +6,7 @@ import WorkoutParticipant from "@/models/WorkoutParticipant";
 import Geolocation from "@react-native-community/geolocation";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import { LatLng }from "react-native-maps";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class WorkoutManager {
     private currentUser: User | null = null;
@@ -14,6 +15,8 @@ export default class WorkoutManager {
     private currentParticipant: WorkoutParticipant | null = null;
     private watchId: Number | null = null;
     private currentCoords: LatLng | null = null;
+
+    private QUEUE_KEY = 'workout_queue';
 
     startNewWorkout(w_id: number, name: string, user: User | null) {
         if (!this.currentWorkout) {
@@ -42,14 +45,74 @@ export default class WorkoutManager {
     }
 
     finishWorkout() {
+        this.currentParticipant?.samples.push(new WorkoutDataSample(1, new Date(), 0, 0)) //needs to be changed
         this.stopPedometerTracking();
         this.stopLocationTracking();
+        this.addWorkoutToQueue(this.currentWorkout!);
         this.currentWorkout = null;
         this.currentParticipant = null;
     }
 
-    getCurrentWorkout(): Workout | null {
-        return this.currentWorkout;
+    async addWorkoutToQueue(workout: Workout) {
+        try {
+            // Retrieve the existing workouts from AsyncStorage
+            const workoutsJson = await AsyncStorage.getItem(this.QUEUE_KEY);
+            let workouts: Workout[] = workoutsJson ? JSON.parse(workoutsJson) : [];
+
+            // Add the new workout to the array
+            workouts.push(workout);
+
+            // Store the updated list of workouts back to AsyncStorage
+            await AsyncStorage.setItem(this.QUEUE_KEY, JSON.stringify(workouts));
+        } catch (error) {
+            console.error("Error saving workout to queue:", error);
+        }
+    }
+
+    // Method to get all workouts stored in AsyncStorage
+    async getWorkouts(): Promise<Workout[]> {
+        try {
+            const workoutsJson = await AsyncStorage.getItem(this.QUEUE_KEY);
+
+            if (workoutsJson) {
+                const parsedWorkouts = JSON.parse(workoutsJson);
+
+                // Convert parsed objects into Workout instances
+                const workouts: Workout[] = parsedWorkouts.map((workout: any) => {
+                    return new Workout(
+                        workout.w_id,
+                        workout.name,
+                        new Date(workout.start), // Convert start to Date object
+                        workout.participants.map((participant: any) => new WorkoutParticipant(
+                            new User(
+                                participant.user.id,
+                                participant.user.email,
+                                participant.user.username,
+                                participant.user.token
+                            ), // Convert user object
+                            participant.total_distance,
+                            participant.avg_speed,
+                            participant.max_speed,
+                            participant.current_speed,
+                            participant.steps,
+                            participant.samples.map((sample: any) => new WorkoutDataSample(
+                                sample.s_id,
+                                new Date(sample.sample_time),
+                                sample.position_lat,
+                                sample.position_lon,
+                            ))
+                        ))
+                    );
+                });
+
+                return workouts;
+            } else {
+                return [];
+            }
+        } catch (error) {
+            console.error("Error retrieving workouts from storage:", error);
+            return [];
+        }
     }
 
     getCurrentParticipant(){

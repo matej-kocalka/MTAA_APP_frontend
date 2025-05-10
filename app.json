@@ -19,11 +19,18 @@
           "apiKey": "AIzaSyBbiaXivXX3OR_XW45QeJRjNESDKMUNnFA"
         }
       },
+      "permissions": [
+        "INTERNET",
+        "ACTIVITY_RECOGNITION"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kocalkaurban.mtaa"
+      "package": "com.kocalkaurban.mtaa",
+      "config": {
+        "cleartextTrafficPermitted": true
+      }
     },
     "web": {
       "bundler": "metro",
