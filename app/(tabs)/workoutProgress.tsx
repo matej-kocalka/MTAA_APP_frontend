@@ -42,11 +42,11 @@ export default function currentWorkout() {
     const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset)
 
     const handleWorkoutStart = () => {
-        try { workoutManager!.startNewWorkout(0, "New workout", auth.user) } catch (e) { console.log(e); }
+        try { workoutManager!.startNewWorkout(Math.floor(Math.random() * (512 + 1)), name, auth.user) } catch (e) { console.log(e); }
         setWorkout(true);
     };
 
-    const handleWorkoutStop = () => {
+    const handleWorkoutStop = async () => {
         workoutManager!.finishWorkout();
         setWorkoutProgress(preset);
         setWorkout(false);
@@ -79,6 +79,7 @@ export default function currentWorkout() {
     }, [navigation, isWorkout]);
 
     const [visible, setVisible] = useState(false);
+    const [friendName, setFriendName] = useState('');
     const [name, setName] = useState('');
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
@@ -168,8 +169,8 @@ export default function currentWorkout() {
 
                             <TextInput
                                 placeholder=""
-                                value={name}
-                                onChangeText={setName}
+                                value={friendName}
+                                onChangeText={setFriendName}
                                 style={styles.input}
                             />
                             <View style={styles.buttonRow}>
@@ -195,9 +196,38 @@ export default function currentWorkout() {
                 <ThemedContainer>
                     <View style={{ alignItems: "center", margin: 30 }}><Ionicons name="walk" size={100} color={theme.accentColor} /></View>
                     <ThemedText style={{ textAlign: "center", fontSize: 20, margin: 10 }}>No active workout</ThemedText>
-                    <ThemedButton style={{ marginBottom: 15, }} onPress={handleWorkoutStart}>Start Workout</ThemedButton>
+                    <ThemedButton style={{ marginBottom: 15, }} onPress={() => setVisible(true)}>Start Workout</ThemedButton>
                 </ThemedContainer>
 
+                <Modal
+                    visible={visible}
+                    animationType="slide"
+                    transparent={true}
+                    onRequestClose={() => setVisible(false)}
+                >
+                    <View style={styles.modalBackground}>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.title}>Start a new workout</Text>
+                            <TextInput
+                                placeholder="New Workout"
+                                value={name}
+                                onChangeText={setName}
+                                style={styles.input}
+                            />
+                            <View style={styles.buttonRow}>
+                                <TouchableOpacity
+                                    style={[styles.modalButton, { backgroundColor: 'gray' }]}
+                                    onPress={() => setVisible(false)}
+                                >
+                                    <Text style={styles.buttonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.modalButton} onPress={() => { if (name.trim() === '') { alert("Name cannot be empty!") } else { setVisible(false); handleWorkoutStart() } }}>
+                                    <Text style={styles.buttonText}>Start</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </View>
         )
     }
