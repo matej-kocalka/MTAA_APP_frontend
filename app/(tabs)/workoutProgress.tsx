@@ -13,6 +13,9 @@ import { WorkoutContext } from "@/context/WorkoutContext";
 import ThemedView from "@/components/ThemedView";
 import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
+import MapView, {LatLng, Polyline} from "react-native-maps";
+import Geolocation from "@react-native-community/geolocation";
+
 
 export type WorkoutProgress = {
     id: number;
@@ -24,7 +27,25 @@ export type WorkoutProgress = {
     steps: number;
 };
 
+Geolocation.setRNConfiguration({
+    authorizationLevel:'always',
+    enableBackgroundUpdates:true,
+    locationProvider:'auto',
+    skipPermissionRequests:false,
+});
+
+/*
+[{latitude: 0, longitude: 10},
+{latitude: 10, longitude: 15},
+{latitude: 15, longitude: 10},
+{latitude: 0, longitude: 123},
+{latitude: 2, longitude: 4},
+{latitude: 2, longitude: 51}]
+    */
+
 export default function currentWorkout() {
+
+
     let preset: WorkoutProgress =
     {
         id: 1,
@@ -38,8 +59,11 @@ export default function currentWorkout() {
 
     const auth = useAuth();
     const workoutManager = useContext(WorkoutContext);
+    const mapRef= React.createRef();
     const [isWorkout, setWorkout] = useState(false);
     const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset)
+    const [userPath, setUserPath] = useState<LatLng[]>([]);
+    const [currentCoords, setCurrentCoords] = useState<LatLng>(0);
 
     const handleWorkoutStart = () => {
         try { workoutManager!.startNewWorkout(0, "New workout", auth.user) } catch (e) { console.log(e); }
@@ -52,17 +76,41 @@ export default function currentWorkout() {
         setWorkout(false);
     };
 
+    useEffect(()=>{
+        console.log("updated");
+    }, [userPath]);
+
     useEffect(() => {   // refreshing
         const interval = setInterval(() => {
+            //console.log("ping");
+
             let wp = workoutManager!.getWorkoutProgress(auth.user);
             if (wp) {
+                /*
+                        mapRef.current?.animateToRegion({
+                            latitude: coords.latitude,
+                            longitude: coords.longitude,
+                            latitudeDelta: 0.1,
+                            longitudeDelta: 0.1
+                        });*/
+
                 setWorkoutProgress(wp);
+            }
+
+            let c= workoutManager!.getCurrentCoords();
+            if(c) {
+                setCurrentCoords(c);
             }
         }, 1000);
 
         return () => clearInterval(interval); // Clean up on unmount
     }, []);
 
+    useEffect(()=>{
+        if(currentCoords != 0){
+            setUserPath(coordinates => [...coordinates, currentCoords]);
+        }
+    }, [currentCoords]);
 
 
     const navigation = useNavigation(); //Top bar button
@@ -150,9 +198,17 @@ export default function currentWorkout() {
     if (isWorkout) {
         return (
             <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
-                <ThemedContainer style={styles.map}>
-                    <Text>Map placeholder</Text>
-                </ThemedContainer>
+                <View style={styles.map}>
+                    <MapView 
+                        style={styles.map}
+                        ref={mapRef}
+                    >
+                    <Polyline coordinates={userPath}
+                        strokeColor="red"
+                        strokeWidth={3}/>
+                    </MapView>
+
+                </View>
                 <WorkoutInfoBox data={workoutProgress!} />
                 <ThemedButton onPress={() => setVisible(true)}>Add friend</ThemedButton>
 

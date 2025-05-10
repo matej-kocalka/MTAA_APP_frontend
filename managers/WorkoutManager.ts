@@ -3,12 +3,17 @@ import User from "@/models/User";
 import Workout from "@/models/Workout";
 import WorkoutDataSample from "@/models/WorkoutDataSample";
 import WorkoutParticipant from "@/models/WorkoutParticipant";
+import Geolocation from "@react-native-community/geolocation";
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import { LatLng }from "react-native-maps";
 
 export default class WorkoutManager {
     private currentUser: User | null = null;
     private currentWorkout: Workout | null = null;
     private pedometerSubscription: any = null;
     private currentParticipant: WorkoutParticipant | null = null;
+    private watchId: Number | null = null;
+    private currentCoords: LatLng | null = null;
 
     startNewWorkout(w_id: number, name: string, user: User | null) {
         if (!this.currentWorkout) {
@@ -21,6 +26,7 @@ export default class WorkoutManager {
                 this.currentWorkout = new Workout(w_id, name, new Date(), participants);
 
                 this.startPedometerTracking();
+                this.startLocationTracking();
 
                 return this.currentWorkout;
             } else {
@@ -31,14 +37,23 @@ export default class WorkoutManager {
         }
     }
 
+    getCurrentCoords(){
+        return this.currentCoords;
+    }
+
     finishWorkout() {
         this.stopPedometerTracking();
+        this.stopLocationTracking();
         this.currentWorkout = null;
         this.currentParticipant = null;
     }
 
     getCurrentWorkout(): Workout | null {
         return this.currentWorkout;
+    }
+
+    getCurrentParticipant(){
+        return this.currentParticipant;
     }
 
     getParticipant(user: User | null): WorkoutParticipant | null {
@@ -113,5 +128,41 @@ export default class WorkoutManager {
             this.pedometerSubscription.remove(); // Stop the subscription to the pedometer updates
             this.pedometerSubscription = null;
         }
+    }
+
+    startLocationTracking(){
+        Geolocation.getCurrentPosition(
+            ({coords}) =>{
+                this.currentCoords = {latitude: coords.latitude, longitude: coords.longitude};
+            },
+            (error) => {
+                console.log(error);
+            },
+            {
+                maximumAge: 0,
+                enableHighAccuracy: true,
+            }
+            );
+
+        const res = Geolocation.watchPosition(
+            async position => {
+                const {latitude, longitude} = position.coords;
+                this.currentCoords = {latitude: latitude, longitude: longitude};
+            },
+            error => {
+                console.log(error);
+            },
+            {
+                enableHighAccuracy:true,
+                distanceFilter: 0,
+                interval: 5000,
+                useSignificantChanges: true
+            }
+        )
+        this.watchId = Number(res);
+    }
+
+    stopLocationTracking(){
+        Geolocation.clearWatch(this.watchId);
     }
 }

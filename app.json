@@ -14,10 +14,14 @@
       "appleTeamId": "PG4K2MQD4A"
     },
     "android": {
+      "config":{
+        "googleMaps": {
+          "apiKey": "AIzaSyBbiaXivXX3OR_XW45QeJRjNESDKMUNnFA"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "permissions": ["ACTIVITY_RECOGNITION"]
+        "backgroundColor": "#ffffff"
       },
       "package": "com.kocalkaurban.mtaa"
     },
@@ -40,6 +44,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0e69f0a9-0d3f-4524-b798-73497da88fff"
+      }
+    },
+    "owner": "nortlen"
   }
 }
