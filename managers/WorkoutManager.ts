@@ -131,6 +131,15 @@ export default class WorkoutManager {
     }
 
     startLocationTracking(){
+
+        Geolocation.requestAuthorization(
+            ()=>{
+
+            },
+            ()=>{
+
+            }
+        );
         Geolocation.getCurrentPosition(
             ({coords}) =>{
                 this.currentCoords = {latitude: coords.latitude, longitude: coords.longitude};
