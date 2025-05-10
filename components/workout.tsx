@@ -1,5 +1,5 @@
 import React from "react";
-import { Workout } from "@/app/(tabs)/workoutList"
+import Workout from "@/models/Workout";
 import { WorkoutProgress } from "@/app/(tabs)/workoutProgress"
 import { StyleSheet, View, Text, useColorScheme } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
@@ -7,6 +7,9 @@ import ThemedThouchable from "./ThemedTouchable";
 import ThemedText from "./ThemedText";
 import ThemedContainer from "./ThemedContainer";
 import { Colors } from "@/constants/colors";
+import useAuth from "@/hooks/useAuth";
+import WorkoutParticipant from "@/models/WorkoutParticipant";
+
 
 type WorkoutProps = {
     data: Workout;
@@ -18,21 +21,23 @@ type WorkoutPropsProgress = {
 
 
 const WorkoutContainer = (workoutProps: WorkoutProps) => {
+    const auth = useAuth();
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+    const participant:WorkoutParticipant|null = workoutProps.data.getParticipant(auth.user);
 
     return (
-        <ThemedThouchable>
-            <ThemedText style={[styles.WorkoutName, {color: theme.textAccent,}]}>
+        <ThemedContainer>
+            <ThemedText style={[styles.WorkoutName, { color: theme.textAccent, }]}>
                 {workoutProps.data.name}
             </ThemedText>
             <ThemedText style={{}}>
-                {workoutProps.data.date.getDate() + ". " + (workoutProps.data.date.getMonth() + 1) + ". " + workoutProps.data.date.getFullYear()}
+                {workoutProps.data.start.getDay() + ". " + (workoutProps.data.start.getMonth() + 1) + ". " + workoutProps.data.start.getFullYear()}
             </ThemedText>
             <ThemedText style={{}}>
-                {workoutProps.data.distance + " km"}
+                {participant?.total_distance + " km"}
             </ThemedText>
-        </ThemedThouchable>
+        </ThemedContainer>
     );
 };
 
@@ -42,7 +47,7 @@ const WorkoutInfoBox = (workoutProps: WorkoutPropsProgress) => {
 
     return (
         <ThemedContainer>
-            <ThemedText style={[styles.WorkoutName, {color: theme.textAccent,}]}>
+            <ThemedText style={[styles.WorkoutName, { color: theme.textAccent, }]}>
                 {workoutProps.data.name}
             </ThemedText>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
@@ -51,8 +56,8 @@ const WorkoutInfoBox = (workoutProps: WorkoutPropsProgress) => {
                     <ThemedText style={styles.WorkoutValue}>{workoutProps.data.duration}</ThemedText>
                 </View>
                 <View>
-                    <ThemedText style={{textAlign:"right"}}>Distance:</ThemedText>
-                    <ThemedText style={[styles.WorkoutValue, {textAlign:"right"}]}>{workoutProps.data.distance + " km"}</ThemedText>
+                    <ThemedText style={{ textAlign: "right" }}>Distance:</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.distance + " km"}</ThemedText>
                 </View>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
@@ -61,8 +66,41 @@ const WorkoutInfoBox = (workoutProps: WorkoutPropsProgress) => {
                     <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance + " km/h"}</ThemedText>
                 </View>
                 <View>
-                    <ThemedText style={{textAlign:"right"}}>Steps:</ThemedText>
-                    <ThemedText style={[styles.WorkoutValue, {textAlign:"right"}]}>{workoutProps.data.steps}</ThemedText>
+                    <ThemedText style={{ textAlign: "right" }}>Steps:</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.steps}</ThemedText>
+                </View>
+            </View>
+        </ThemedContainer>
+    )
+}
+
+const WorkoutInfoBoxResults = (workoutProps: WorkoutPropsProgress) => {
+    const colorScheme = useColorScheme();
+    const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+
+    return (
+        <ThemedContainer>
+            <ThemedText style={[styles.WorkoutName, { color: theme.textAccent, }]}>
+                {workoutProps.data.name}
+            </ThemedText>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                <View>
+                    <ThemedText>Duration:</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.duration}</ThemedText>
+                </View>
+                <View>
+                    <ThemedText style={{ textAlign: "right" }}>Distance:</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.distance + " km"}</ThemedText>
+                </View>
+            </View>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                <View>
+                    <ThemedText>Average speed:</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance + " km/h"}</ThemedText>
+                </View>
+                <View>
+                    <ThemedText style={{ textAlign: "right" }}>Steps:</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.steps}</ThemedText>
                 </View>
             </View>
         </ThemedContainer>
@@ -82,4 +120,4 @@ const styles = StyleSheet.create({
 });
 
 
-export { WorkoutInfoBox, WorkoutContainer };
+export { WorkoutInfoBox, WorkoutContainer, WorkoutInfoBoxResults };

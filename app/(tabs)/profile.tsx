@@ -7,6 +7,7 @@ import ThemedButton from "@/components/ThemedButton";
 import ThemedText from "@/components/ThemedText";
 import { Colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RootLayout() {
   const auth = useContext(AuthContext);
@@ -20,6 +21,15 @@ export default function RootLayout() {
     } catch (e) {
       console.log(e)
       // Alert.alert('Login failed', 'Invalid credentials');
+    }
+  };
+
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      console.log("AsyncStorage cleared!");
+    } catch (error) {
+      console.error("Error clearing AsyncStorage:", error);
     }
   };
 
@@ -53,11 +63,11 @@ export default function RootLayout() {
       fontWeight: "normal",
     },
 
-    changeButtons:{
-      flexDirection:"row",
-      alignItems:"center",
-      borderBottomColor:theme.backgroundColor,
-      borderBottomWidth:1,
+    changeButtons: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderBottomColor: theme.backgroundColor,
+      borderBottomWidth: 1,
       padding: 15,
     }
   });
@@ -69,14 +79,14 @@ export default function RootLayout() {
         <ThemedText style={styles.username}>{auth?.user?.username}</ThemedText>
         <ThemedText style={styles.email}>{auth?.user?.email}</ThemedText>
       </ThemedContainer>
-      <ThemedContainer style={{padding:0}}>
-        <TouchableOpacity style={styles.changeButtons}><Ionicons name="person-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Change username</ThemedText></TouchableOpacity>
-        <TouchableOpacity style={styles.changeButtons}><Ionicons name="lock-closed-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Change password</ThemedText></TouchableOpacity>
-        <TouchableOpacity style={styles.changeButtons}><Ionicons name="image-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Change image</ThemedText></TouchableOpacity>
-        <TouchableOpacity style={styles.changeButtons} onPress={handleLogout}><Ionicons name="log-out-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Log out</ThemedText></TouchableOpacity>
-        <TouchableOpacity style={[styles.changeButtons, {borderBottomWidth: 0}]}><Ionicons name="trash-outline" size={25} color={theme.accentColor}/><ThemedText style={{marginLeft: 15, fontSize: 16}}>Delete profile</ThemedText></TouchableOpacity>
+      <ThemedContainer style={{ padding: 0 }}>
+        <TouchableOpacity style={styles.changeButtons}><Ionicons name="person-outline" size={25} color={theme.accentColor} /><ThemedText style={{ marginLeft: 15, fontSize: 16 }}>Change username</ThemedText></TouchableOpacity>
+        <TouchableOpacity style={styles.changeButtons}><Ionicons name="lock-closed-outline" size={25} color={theme.accentColor} /><ThemedText style={{ marginLeft: 15, fontSize: 16 }}>Change password</ThemedText></TouchableOpacity>
+        <TouchableOpacity style={styles.changeButtons}><Ionicons name="image-outline" size={25} color={theme.accentColor} /><ThemedText style={{ marginLeft: 15, fontSize: 16 }}>Change image</ThemedText></TouchableOpacity>
+        <TouchableOpacity style={styles.changeButtons} onPress={handleLogout}><Ionicons name="log-out-outline" size={25} color={theme.accentColor} /><ThemedText style={{ marginLeft: 15, fontSize: 16 }}>Log out</ThemedText></TouchableOpacity>
+        <TouchableOpacity style={[styles.changeButtons, { borderBottomWidth: 0 }]} onPress={clearStorage}><Ionicons name="trash-outline" size={25} color={theme.accentColor} /><ThemedText style={{ marginLeft: 15, fontSize: 16 }}>Delete profile</ThemedText></TouchableOpacity>
       </ThemedContainer>
-      
+
     </ScrollView>
   );
 }
