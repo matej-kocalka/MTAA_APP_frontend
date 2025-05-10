@@ -140,18 +140,6 @@ export default class WorkoutManager {
 
             }
         );
-        Geolocation.getCurrentPosition(
-            ({coords}) =>{
-                this.currentCoords = {latitude: coords.latitude, longitude: coords.longitude};
-            },
-            (error) => {
-                console.log(error);
-            },
-            {
-                maximumAge: 0,
-                enableHighAccuracy: true,
-            }
-            );
 
         const res = Geolocation.watchPosition(
             async position => {

@@ -3,7 +3,7 @@ import ThemedContainer from "@/components/ThemedContainer";
 import { WorkoutContainer, WorkoutInfoBox } from "@/components/workout";
 import { Colors } from "@/constants/colors";
 import { useNavigation } from "expo-router";
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, SafeAreaView, Pressable, TextInput, Button, useColorScheme } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import Workout from "@/models/Workout";
@@ -59,11 +59,13 @@ export default function currentWorkout() {
 
     const auth = useAuth();
     const workoutManager = useContext(WorkoutContext);
-    const mapRef= React.createRef();
+    const mapRef = useRef<MapView>();
     const [isWorkout, setWorkout] = useState(false);
     const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset)
     const [userPath, setUserPath] = useState<LatLng[]>([]);
     const [currentCoords, setCurrentCoords] = useState<LatLng>(0);
+    //const [minCoords, setMinCoords] = useState<LatLng>(0);
+    //const [maxCoords, setMaxCoords] = useState<LatLng>(0);
 
     const handleWorkoutStart = () => {
         try { workoutManager!.startNewWorkout(0, "New workout", auth.user) } catch (e) { console.log(e); }
@@ -76,23 +78,12 @@ export default function currentWorkout() {
         setWorkout(false);
     };
 
-    useEffect(()=>{
-        console.log("updated");
-    }, [userPath]);
-
     useEffect(() => {   // refreshing
         const interval = setInterval(() => {
             //console.log("ping");
 
             let wp = workoutManager!.getWorkoutProgress(auth.user);
             if (wp) {
-                /*
-                        mapRef.current?.animateToRegion({
-                            latitude: coords.latitude,
-                            longitude: coords.longitude,
-                            latitudeDelta: 0.1,
-                            longitudeDelta: 0.1
-                        });*/
 
                 setWorkoutProgress(wp);
             }
@@ -109,6 +100,43 @@ export default function currentWorkout() {
     useEffect(()=>{
         if(currentCoords != 0){
             setUserPath(coordinates => [...coordinates, currentCoords]);
+            /*
+            let minLat;
+            let minLng;
+            let maxLat;
+            let maxLng;
+            if (minCoords != 0){
+                minLat = minCoords.latitude;
+                minLng = minCoords.longitude;
+                if (minLat > currentCoords.latitude) minLat = currentCoords.latitude;
+                if (minLng > currentCoords.longitude) minLng = currentCoords.longitude;
+            }else{
+                minLat = currentCoords.latitude;
+                minLng = currentCoords.longitude;
+            }
+            if(maxCoords != 0){
+                maxLat = maxCoords.latitude;
+                maxLng = maxCoords.longitude;
+                if (maxLat > currentCoords.latitude) maxLat = currentCoords.latitude;
+                if (maxLng > currentCoords.longitude) maxLng = currentCoords.longitude;
+            } else{
+                minLat = currentCoords.latitude;
+                minLng = currentCoords.longitude;
+            }
+            setMinCoords({latitude: minLat, longitude: minLng});
+            setMaxCoords({latitude: maxLat, longitude: maxLng});
+            this.map.animateToRegion({
+                latitude: (maxLat+minLat)/2,
+                longitude: (maxLng+minLng)/2,
+                latitudeDelta: (maxLat-minLat) * 1.1,
+                longitudeDelta: (maxLng-minLng) * 1.1
+            });*/
+            mapRef.current!.animateToRegion({
+                latitude: currentCoords.latitude,
+                longitude: currentCoords.longitude,
+                latitudeDelta: 0.0008,
+                longitudeDelta: 0.0008
+            });
         }
     }, [currentCoords]);
 
@@ -202,6 +230,12 @@ export default function currentWorkout() {
                     <MapView 
                         style={styles.map}
                         ref={mapRef}
+                        initialRefion={{
+                            latitude: 40,
+                            longitude: 40,
+                            latitudeDelta: 0.1,
+                            longitudeDelta: 0.2
+                        }}
                     >
                     <Polyline coordinates={userPath}
                         strokeColor="red"
