@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import MapView, { LatLng, Polyline } from "react-native-maps";
 import WorkoutService from "@/services/WorkoutService";
+import { uploadFiles } from "react-native-fs";
 
 
 export type WorkoutProgress = {
@@ -46,6 +47,15 @@ export default function currentWorkout() {
     const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset);
     const mapRef = useRef<MapView>();
     const [userPath, setUserPath] = useState<LatLng[]>([]);
+
+    const UploadWorkout = async () =>{
+        const workout = workoutManager?.getWorkout(Number(id));
+        const response = await WorkoutService.createWorkout(workout.name, workout.start);
+        const i : number = workoutManager?.workouts.findIndex(p => p.w_id == workout.w_id);
+        workoutManager!.workouts[i] = response.data.workout_id;
+        const status = await WorkoutService.uploadData(this.currentWorkout!.w_id, workout?.participants.find(p => p.user.id === auth.user.id).samples);
+        workoutManager.StoreNewWorkoutArray();
+    }
 
     useEffect(() => {
         const fetchWorkout = async () => {
@@ -133,6 +143,11 @@ export default function currentWorkout() {
                         />
                 </MapView>
             </ThemedContainer>
+            {Number(id) < 0 ? 
+                <ThemedButton onPress={UploadWorkout}> <ThemedText>Upload</ThemedText></ThemedButton>
+                :
+                null
+            }
             <WorkoutInfoBoxResults data={workoutProgress!} />
 
         </ScrollView>

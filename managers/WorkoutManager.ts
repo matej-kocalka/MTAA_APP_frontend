@@ -18,7 +18,7 @@ export default class WorkoutManager {
     private currentParticipant: WorkoutParticipant | null = null;
     private watchId: number | null = null;
     private currentCoords: LatLng | null = null;
-    private workouts: Workout[] = [];
+    public workouts: Workout[] = [];
     private timeStamps: Float[] = [];
     private distanceStamps: Float [] = [];
     private lastSample: Date = Date();
@@ -41,7 +41,7 @@ export default class WorkoutManager {
                 this.currentParticipant = new WorkoutParticipant(user, 0, 0, 0, 0, 0, [], sample, []);
                 participants.push(this.currentParticipant);
                 let date = new Date()
-                this.currentWorkout = new Workout(null, name, date, participants);
+                this.currentWorkout = new Workout(-Math.floor(Math.random() * 65536), name, date, participants);
                 this.workouts.push(this.currentWorkout);
                 this.createWorkout(name, date);
 
@@ -89,6 +89,10 @@ export default class WorkoutManager {
         }
     }
 
+    async StoreNewWorkoutArray(){
+        await AsyncStorage.setItem(this.QUEUE_KEY, JSON.stringify(this.workouts));
+    }
+
     getWorkout(workout_id: number) {
         return this.workouts?.find(w => w.w_id === workout_id);
     }
@@ -98,14 +102,15 @@ export default class WorkoutManager {
 
     // Method to get all workouts stored in AsyncStorage
     async getWorkouts(): Promise<Workout[]> {
-        /*try {
+        var workoutsPhone : Workout[] = [];
+        try {
             const workoutsJson = await AsyncStorage.getItem(this.QUEUE_KEY);
 
             if (workoutsJson) {
                 const parsedWorkouts = JSON.parse(workoutsJson);
 
                 // Convert parsed objects into Workout instances
-                const workouts: Workout[] = parsedWorkouts.map((workout: any) => {
+                workoutsPhone = parsedWorkouts.map((workout: any) => {
                     return new Workout(
                         workout.w_id,
                         workout.name,
@@ -132,14 +137,11 @@ export default class WorkoutManager {
                     );
                 });
 
-                return workouts;
-            } else {
-                return [];
             }
         } catch (error) {
             console.error("Error retrieving workouts from storage:", error);
-            return [];
-        }*/
+        }
+
         const workoutsBackend : Workout[] = [];
         const result = await WorkoutService.getList();
         if(result.status == 200){
@@ -147,8 +149,17 @@ export default class WorkoutManager {
                 workoutsBackend.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(this.currentUser, w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
             }
         }
-        this.workouts = [...workoutsBackend];
-        return workoutsBackend;
+
+        const mergedArray = [
+            ...workoutsBackend,
+            ...workoutsPhone
+        ].filter((value, index, self) => 
+            self.findIndex((v) => v.w_id === value.w_id) === index
+        );
+        this.workouts = mergedArray;
+        this.StoreNewWorkoutArray();
+        
+        return mergedArray;
     }
 
     getCurrentParticipant(){
