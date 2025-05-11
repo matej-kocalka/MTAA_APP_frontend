@@ -16,6 +16,7 @@
     "android": {
       "config":{
         "googleMaps": {
+          "cleartextTrafficPermitted": true,
           "apiKey": "AIzaSyBbiaXivXX3OR_XW45QeJRjNESDKMUNnFA"
         }
       },
@@ -27,10 +28,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kocalkaurban.mtaa",
-      "config": {
-        "cleartextTrafficPermitted": true
-      }
+      "package": "com.kocalkaurban.mtaa"
     },
     "web": {
       "bundler": "metro",
