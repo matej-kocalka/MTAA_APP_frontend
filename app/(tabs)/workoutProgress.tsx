@@ -2,7 +2,7 @@ import ThemedButton from "@/components/ThemedButton";
 import ThemedContainer from "@/components/ThemedContainer";
 import { WorkoutContainer, WorkoutInfoBox } from "@/components/workout";
 import { Colors } from "@/constants/colors";
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, SafeAreaView, Pressable, TextInput, Button, useColorScheme } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
@@ -42,6 +42,7 @@ Geolocation.setRNConfiguration({
 {latitude: 2, longitude: 4},
 {latitude: 2, longitude: 51}]
     */
+const router = useRouter();
 
 export default function currentWorkout() {
 
@@ -73,9 +74,12 @@ export default function currentWorkout() {
     };
 
     const handleWorkoutStop = async () => {
+        const workout = workoutManager?.getCurrentWorkout();
         workoutManager!.finishWorkout();
         setWorkoutProgress(preset);
         setWorkout(false);
+        router.navigate({ pathname: "/(tabs)/workoutList"});
+        router.push({ pathname: "/workoutDetail", params: { id: workout?.w_id } })
     };
 
     useEffect(() => {   // refreshing
@@ -132,6 +136,7 @@ export default function currentWorkout() {
                 latitudeDelta: (maxLat-minLat) * 1.1,
                 longitudeDelta: (maxLng-minLng) * 1.1
             });*/
+            if(mapRef.current)
             mapRef.current!.animateToRegion({
                 latitude: currentCoords.latitude,
                 longitude: currentCoords.longitude,

@@ -88,6 +88,9 @@ export default class WorkoutManager {
     getWorkout(workout_id: number) {
         return this.workouts?.find(w => w.w_id === workout_id);
     }
+    getCurrentWorkout(){
+        return this.currentWorkout;
+    }
 
     // Method to get all workouts stored in AsyncStorage
     async getWorkouts(): Promise<Workout[]> {
