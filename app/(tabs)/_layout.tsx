@@ -5,11 +5,13 @@ import React, { useContext } from "react";
 import { Button, useColorScheme } from "react-native";
 import { Redirect, Stack } from 'expo-router';
 import useAuth from "@/hooks/useAuth";
+import DeviceInfo from "react-native-device-info";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const theme = colorScheme ? Colors[colorScheme] : Colors.light;
   const { user } = useAuth();
+  const tablet = DeviceInfo.isTablet();
 
   if (!user) {
     return <Redirect href="/login" />;
@@ -31,24 +33,38 @@ export default function RootLayout() {
         },
         headerTintColor: theme.headerColor,
       }}>
-      <Tabs.Screen
-        name="workoutList"
-        options={{
-          title: 'Workout history',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="bookmarks-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="workoutProgress"
-        options={{
-          title: 'Excercise',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="footsteps-outline" size={size} color={color} />
-          ),
-        }}
-      />
+        <Tabs.Screen
+          name="workoutList"
+          options={{
+            title: 'Workout history',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="bookmarks-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        {tablet ? 
+            <Tabs.Screen
+            name="workoutProgress"
+            options={{
+              title: 'Excercise',
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="footsteps-outline" size={size} color={color} />
+              ),
+              href: null,
+            }}
+            />
+        :
+          <Tabs.Screen
+          name="workoutProgress"
+          options={{
+            title: 'Excercise',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="footsteps-outline" size={size} color={color} />
+            ),
+          }}
+          />
+        }
+      
       <Tabs.Screen
         name="friendsList"
         options={{

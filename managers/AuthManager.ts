@@ -5,11 +5,13 @@ import WorkoutService from '@/services/WorkoutService';
 
 class AuthManager {
   private user: User | null = null;
+  private token: string | null;
 
   async login(email: string, password: string): Promise<User> {
     const data = await AuthService.login(email, password);
     const user_info = await AuthService.getUser(data.token);
     this.user = new User(user_info.user_id, user_info.email, user_info.user_name, data.token);
+    this.token = data.token;
     WorkoutService.setToken(data.token);
     await AsyncStorage.setItem('user', JSON.stringify(this.user));
     return this.user;
@@ -22,6 +24,10 @@ class AuthManager {
 
   getCurrentUser(): User | null {
     return this.user;
+  }
+
+  getToken(): string | null{
+    return this.token;
   }
 }
 

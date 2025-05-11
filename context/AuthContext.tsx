@@ -6,6 +6,7 @@ type AuthContextType = {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  getToken: () => string | null;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -23,8 +24,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
+  const getToken = () => {
+    return AuthManager.getToken();
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, getToken}}>
       {children}
     </AuthContext.Provider>
   );

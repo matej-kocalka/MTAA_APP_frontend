@@ -123,7 +123,9 @@ export default function currentWorkout() {
         <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
             <ThemedContainer style={styles.mapContainer}>
                 <MapView style={styles.map}
-                        ref={mapRef}>
+                        ref={mapRef}
+                        showsBuildings={false}
+                    >
                     <Polyline 
                         coordinates={userPath}
                         strokeColor="red"

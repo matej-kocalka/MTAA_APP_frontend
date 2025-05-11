@@ -42,7 +42,9 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
                     </ThemedText>
                 </View>
                 <View style={{justifyContent:"center"}}>
-                    <TouchableOpacity onPress={() => workoutProps.onDelete(workoutProps.data)}> <ThemedText>Delete</ThemedText></TouchableOpacity>
+                    <TouchableOpacity onPress={() => workoutProps.onDelete(workoutProps.data)}>
+                        <ThemedText>Delete</ThemedText>
+                    </TouchableOpacity>
                 </View>
             </View>
         </ThemedContainer>

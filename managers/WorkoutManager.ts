@@ -21,6 +21,7 @@ export default class WorkoutManager {
     private workouts: Workout[] = [];
     private timeStamps: Float[] = [];
     private distanceStamps: Float [] = [];
+    private lastSample: Date = Date();
 
     private QUEUE_KEY = 'workout_queue';
     privateSendDataCounter = 0;
@@ -262,8 +263,10 @@ export default class WorkoutManager {
                         if (this.currentParticipant!.max_speed < speed) this.currentParticipant!.max_speed = speed;
                     }
                 }
-                this.currentParticipant!.samples = [...this.currentParticipant!.samples, {s_id: null, sample_time: (new Date()), position_lat: latitude, position_lon: longitude}];
-                this.currentParticipant!.samplesNotSent = [...this.currentParticipant!.samplesNotSent, {s_id: null, sample_time: (new Date()), position_lat: latitude, position_lon: longitude}];
+                var newSampleTime = new Date();
+                this.currentParticipant!.samples = [...this.currentParticipant!.samples, {s_id: null, sample_time: (newSampleTime), position_lat: latitude, position_lon: longitude}];
+                this.currentParticipant!.samplesNotSent = [...this.currentParticipant!.samplesNotSent, {s_id: null, sample_time: (newSampleTime), position_lat: latitude, position_lon: longitude}];
+                if(this.lastSample < newSampleTime) this.lastSample=newSampleTime;
                 this.currentCoords = {latitude: latitude, longitude: longitude};
             },
             error => {
@@ -304,30 +307,63 @@ export default class WorkoutManager {
         }
     }
 
-    async workoutUploadData(){
+    DateToString(date: Date){
+        return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    }
+
+    async workoutUploadData(ws){
         if (this.currentWorkout!.w_id && this.currentParticipant!.samplesNotSent.length > 1){
             const samplesToSent = this.currentParticipant!.samplesNotSent;
             this.currentParticipant!.samplesNotSent = [];
-            const status = await WorkoutService.uploadData(this.currentWorkout!.w_id, samplesToSent);
-            if (status != 201){
-                this.currentParticipant!.samplesNotSent = [...samplesToSent, ...this.currentParticipant!.samplesNotSent]
-            }
-            if(this.currentWorkout && this.currentParticipant){
-                await WorkoutService.updateParticipantData(this.currentWorkout.w_id, this.currentParticipant);
+            if(ws){
+                const samplesArray = [];
+                for (var s of samplesToSent){
+                    samplesArray.push({sample_time: this.DateToString(s.sample_time), position_lat: s.position_lat, position_lon: s.position_lon})
+                }
+                const message = JSON.stringify({
+                    "workout_id": this.currentWorkout!.w_id,
+                    "samples": samplesArray,
+                    "load_from": this.lastSample
+                });
+                ws.send(message);
+            } else {
+                const status = await WorkoutService.uploadData(this.currentWorkout!.w_id, samplesToSent);
+                if (status != 201){
+                    this.currentParticipant!.samplesNotSent = [...samplesToSent, ...this.currentParticipant!.samplesNotSent]
+                }
+                if(this.currentWorkout && this.currentParticipant){
+                    await WorkoutService.updateParticipantData(this.currentWorkout.w_id, this.currentParticipant);
+                }
             }
         }
     }
 
-    sendData(){
+    sendData(ws){
         this.privateSendDataCounter++;
 
         if(this.privateSendDataCounter >= 5){
-            this.workoutUploadData();
+            this.workoutUploadData(ws);
             this.privateSendDataCounter = 0;
         }
     }
 
     setUser(user){
         this.currentUser = user;
+    }
+
+    handleSocketMessage(message){
+        
+        var samples = message.samples
+        samples.sort((a,b)=>a.sample_time > b.sample_time ? 1: -1);
+        for(var s of message.samples){
+            let user = this.currentWorkout?.participants.find(p => p.user.id === s.user_id);
+            if(user){
+                var sampleTime = new Date(Date.parse(s.sample_time));
+                user?.samples.push({s_id: s.sample_id, sample_time: sampleTime, position_lat: s.position_lat, position_lon: s.position_lon});
+                user?.coordinates.push({latitude:s.position_lat, longitude: s.position_lon});
+            
+                if(this.lastSample < sampleTime) this.lastSample=sampleTime;
+            }
+        }
     }
 }

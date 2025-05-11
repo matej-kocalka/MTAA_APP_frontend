@@ -72,7 +72,7 @@ export default function WorkoutList() {
         const fetchWorkouts = async () => {
             workoutManager?.setUser(auth.user);
             const data = await workoutManager!.getWorkouts()!;
-            setWorkouts(work => [/*...work, */...data]);
+            setWorkouts(work => [...data]);
         };
 
         fetchWorkouts();

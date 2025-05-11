@@ -15,6 +15,8 @@ import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, {LatLng, Polyline} from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
+import { WEB_SOCKET_URL } from "@/constants/api";
+
 
 
 export type WorkoutProgress = {
@@ -61,10 +63,12 @@ export default function currentWorkout() {
     const auth = useAuth();
     const workoutManager = useContext(WorkoutContext);
     const mapRef = useRef<MapView>();
+    const socketRef = useRef<WebSocket|null>(null);
     const [isWorkout, setWorkout] = useState(false);
     const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset)
     const [userPath, setUserPath] = useState<LatLng[]>([]);
     const [currentCoords, setCurrentCoords] = useState<LatLng>(0);
+    const [isSocketConnected, setIsSocketConneted] = useState<Boolean>(false);
     //const [minCoords, setMinCoords] = useState<LatLng>(0);
     //const [maxCoords, setMaxCoords] = useState<LatLng>(0);
 
@@ -82,24 +86,49 @@ export default function currentWorkout() {
         router.push({ pathname: "/workoutDetail", params: { id: workout?.w_id } })
     };
 
+
     useEffect(() => {   // refreshing
+        const ws = new WebSocket(`${WEB_SOCKET_URL}/workout/socket?token=${auth.getToken()}`)
+
+        ws.onopen = () => {
+            setIsSocketConneted(true);
+        };
+
+        ws.onmessage = (event) => {
+            workoutManager!.handleSocketMessage(JSON.parse(event.data));
+        };
+
+        ws.onclose = () => {
+            setIsSocketConneted(false);
+        };
+
+        ws.onerror = (error) => {
+            console.error(`WebSocket error: ${error}`);
+        };
+        
         const interval = setInterval(() => {
-            //console.log("ping");
 
-            let wp = workoutManager!.getWorkoutProgress(auth.user);
-            if (wp) {
+            if(isWorkout){
+                let wp = workoutManager!.getWorkoutProgress(auth.user);
+                if (wp) {
 
-                setWorkoutProgress(wp);
-            }
-            workoutManager!.sendData();
+                    setWorkoutProgress(wp);
+                }
 
-            let c= workoutManager!.getCurrentCoords();
-            if(c) {
-                setCurrentCoords(c);
+                workoutManager!.sendData(socketRef.current);
+
+                let c= workoutManager!.getCurrentCoords();
+                if(c) {
+                    setCurrentCoords(c);
+                }
             }
         }, 1000);
-
-        return () => clearInterval(interval); // Clean up on unmount
+        return () => {
+            clearInterval(interval);
+            if (socketRef.current) {
+                socketRef.current.close();
+            }
+        }; // Clean up on unmount
     }, []);
 
     useEffect(()=>{
@@ -135,7 +164,8 @@ export default function currentWorkout() {
                 longitude: (maxLng+minLng)/2,
                 latitudeDelta: (maxLat-minLat) * 1.1,
                 longitudeDelta: (maxLng-minLng) * 1.1
-            });*/
+            });
+            */
             if(mapRef.current)
             mapRef.current!.animateToRegion({
                 latitude: currentCoords.latitude,
@@ -243,6 +273,7 @@ export default function currentWorkout() {
                             latitudeDelta: 0.1,
                             longitudeDelta: 0.2
                         }}
+                        showsBuildings={false}
                     >
                     <Polyline coordinates={userPath}
                         strokeColor="red"
