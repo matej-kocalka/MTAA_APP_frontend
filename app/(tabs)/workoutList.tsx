@@ -65,7 +65,7 @@ export default function WorkoutList() {
                     workouts.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(auth.user, w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
                 }
             }
-            setWorkouts(work => [...work, ...workouts]);
+            setWorkouts(work => [/*...work, */...workouts]);
         };
 
         fetchWorkouts();

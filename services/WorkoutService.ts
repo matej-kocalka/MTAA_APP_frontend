@@ -17,9 +17,13 @@ class WorkoutService {
     }
 
     async uploadData(workout_id: number, samples: WorkoutDataSample[]) {
+        const samplesArray = [];
+        for (var s of samples){
+            samplesArray.push({sample_time: this.DateToString(s.sample_time), position_lat: s.position_lat, position_lon: s.position_lon})
+        }
         const params = JSON.stringify({
             "workout_id": workout_id,
-            "samples": samples
+            "samples": samplesArray
         });
         const response = await axios.post(`${API_URL}/workout/uploadData`, params, {
             headers: {
@@ -56,7 +60,7 @@ class WorkoutService {
             "Content-Type": "application/json"
             },
         });
-        return response.data;
+        return response;
     }
 
     async updateParticipantData() {
@@ -72,30 +76,21 @@ class WorkoutService {
     }
 
     async getData(workout_id: number, from_sample: number) {
-        const params = JSON.stringify({
-            "workout_id": workout_id,
-            "from_sample": from_sample
-        });
-        const response = await axios.get(`${API_URL}/workout/getData`, {
+        const response = await axios.get(`${API_URL}/workout/getData/${workout_id}:${from_sample}`, {
             headers: {
             Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json"
             },
         });
-        return response.data;
+        return response;
     }
 
     async deleteWorkout(workout_id: number) {
-        const params = JSON.stringify({
-            "workout_id": workout_id,
-        });
-        const response = await axios.delete(`${API_URL}/workout/deleteWorkout`, {
+        const response = await axios.delete(`${API_URL}/workout/deleteWorkout/${workout_id}`, {
             headers: {
             Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json"
             },
         });
-        return response.data;
+        return response;
     }
 
     async shareWorkout(workout_id: number, shared_user_id: number) {
@@ -109,21 +104,16 @@ class WorkoutService {
             "Content-Type": "application/json"
             },
         });
-        return response.data;
+        return response;
     }
 
     async unshareWorkout(workout_id: number, shared_user_id: number) {
-        const params = JSON.stringify({
-            "workout_id": workout_id,
-            "shared_user_id": shared_user_id
-        });
-        const response = await axios.delete(`${API_URL}/workout/unshareWorkout`, {
+        const response = await axios.delete(`${API_URL}/workout/unshareWorkout/${workout_id}:${shared_user_id}`, {
             headers: {
             Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json"
             },
         });
-        return response.data;
+        return response;
     }
 
 }

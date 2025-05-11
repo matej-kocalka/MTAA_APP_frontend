@@ -3,7 +3,7 @@ import ThemedContainer from "@/components/ThemedContainer";
 import { WorkoutInfoBoxResults } from "@/components/workout";
 import { Colors } from "@/constants/colors";
 import { useNavigation } from "expo-router";
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, SafeAreaView, Pressable, TextInput, Button, useColorScheme } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import Workout from "@/models/Workout";
@@ -14,6 +14,8 @@ import ThemedView from "@/components/ThemedView";
 import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
+import MapView, { LatLng, Polyline } from "react-native-maps";
+import WorkoutService from "@/services/WorkoutService";
 
 
 export type WorkoutProgress = {
@@ -41,17 +43,52 @@ export default function currentWorkout() {
     const auth = useAuth();
     const workoutManager = useContext(WorkoutContext);
     const { id } = useLocalSearchParams();
-    const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset)
+    const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset);
+    const mapRef = useRef<MapView>();
+    const [userPath, setUserPath] = useState<LatLng[]>([]);
 
     useEffect(() => {
         const fetchWorkout = async () => {
-            const allWorkouts = await workoutManager?.getWorkouts();
-            const workout = allWorkouts?.find(w => w.w_id === Number(id));
+            const workout = workoutManager?.getWorkout(Number(id));
+            const result = await WorkoutService.getData(Number(id), 0);
+            if(result.status == 200){
+                let currentUser = workout?.participants.find(p => p.user.id === auth.user.id);
+                const path = [];
+                for(var s of result.data.samples){
+                    path.push({sample_time: s.sample_time, coords:{latitude: s.position_lat, longitude: s.position_lon}});
+                }
+                path.sort((a,b)=>a.sample_time > b.sample_time ? 1: -1);
+                const coords = [];
+                let minLat, minLng, maxLat, maxLng;
+                if(path.length > 0){
+                    minLat = maxLat = path[0].coords.latitude;
+                    minLng = maxLng = path[0].coords.longitude;
+                    for(var s of path){
+                        if ( s.coords.latitude < minLat) minLat = s.coords.latitude;
+                        if ( s.coords.latitude > maxLat) maxLat = s.coords.latitude;
+                        if ( s.coords.longitude < minLng) minLng = s.coords.longitude;
+                        if ( s.coords.longitude > maxLng) maxLng = s.coords.longitude;
+                        coords.push(s.coords);
+                    }
+                // currentUser!.coordinates = coords;
+                    setUserPath(coords);
+                    mapRef.current!.animateToRegion({
+                        latitude: (maxLat+minLat)/2,
+                        longitude: (maxLng+minLng)/2,
+                        latitudeDelta: (maxLat-minLat) * 1.2,
+                        longitudeDelta: (maxLng-minLng) * 1.2
+                    });
+                }
+            }
             const progress: WorkoutProgress = workout!.getWorkoutResults(auth.user) ?? preset;
             setWorkoutProgress(progress);
         };
         fetchWorkout();
     }, [id]);
+
+    useEffect(()=>{
+        console.log(userPath);
+    }, [userPath])
 
     const navigation = useNavigation();
     useLayoutEffect(() => {
@@ -62,8 +99,12 @@ export default function currentWorkout() {
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
 
     const styles = StyleSheet.create({
-        map: {
+        mapContainer: {
             height: 350,
+        },
+
+        map: {
+            flex: 1
         },
 
         buttonText: {
@@ -83,8 +124,15 @@ export default function currentWorkout() {
 
     return (
         <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
-            <ThemedContainer style={styles.map}>
-                <Text>Map placeholder</Text>
+            <ThemedContainer style={styles.mapContainer}>
+                <MapView style={styles.map}
+                        ref={mapRef}>
+                    <Polyline 
+                        coordinates={userPath}
+                        strokeColor="red"
+                        strokeWidth={3}
+                        />
+                </MapView>
             </ThemedContainer>
             <WorkoutInfoBoxResults data={workoutProgress!} />
 

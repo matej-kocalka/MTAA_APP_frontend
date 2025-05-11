@@ -18,6 +18,7 @@ export default class WorkoutManager {
     private currentParticipant: WorkoutParticipant | null = null;
     private watchId: number | null = null;
     private currentCoords: LatLng | null = null;
+    private workouts: Workout[] = [];
 
     private QUEUE_KEY = 'workout_queue';
     privateSendDataCounter = 0;
@@ -38,6 +39,7 @@ export default class WorkoutManager {
                 participants.push(this.currentParticipant);
                 let date = new Date()
                 this.currentWorkout = new Workout(null, name, date, participants);
+                this.workouts.push(this.currentWorkout);
                 this.createWorkout(name, date);
 
                 this.startPedometerTracking();
@@ -81,6 +83,10 @@ export default class WorkoutManager {
         } catch (error) {
             console.error("Error saving workout to queue:", error);
         }
+    }
+
+    getWorkout(workout_id: number) {
+        return this.workouts?.find(w => w.w_id === workout_id);
     }
 
     // Method to get all workouts stored in AsyncStorage
@@ -220,7 +226,6 @@ export default class WorkoutManager {
 
         const res = Geolocation.watchPosition(
             async position => {
-                console.log("LocationUpdate");
                 const {latitude, longitude} = position.coords;
                 if(this.currentCoords){
                     let dist = this.distance(position.coords.latitude, position.coords.longitude, this.currentCoords!.latitude, this.currentCoords!.longitude);
@@ -274,8 +279,7 @@ export default class WorkoutManager {
         if (this.currentWorkout!.w_id && this.currentParticipant!.samplesNotSent.length > 1){
             const samplesToSent = this.currentParticipant!.samplesNotSent;
             this.currentParticipant!.samplesNotSent = [];
-            const status = await WorkoutService.uploadData(this.currentWorkout!.w_id, this.currentParticipant!.samplesNotSent);
-            console.log(status);
+            const status = await WorkoutService.uploadData(this.currentWorkout!.w_id, samplesToSent);
             if (status != 201){
                 this.currentParticipant!.samplesNotSent = [...samplesToSent, ...this.currentParticipant!.samplesNotSent]
             }
