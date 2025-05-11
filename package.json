@@ -35,9 +35,10 @@
     "react": "19.0.0",
     "react-native": "0.79.2",
     "react-native-device-info": "^14.0.4",
-    "react-native-maps": "^1.23.7",
     "react-native-fs": "^2.20.0",
+    "react-native-maps": "^1.23.7",
     "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "^4.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
