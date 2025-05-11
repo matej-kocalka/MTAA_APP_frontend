@@ -7,6 +7,8 @@ import { FlatList, TouchableOpacity, useColorScheme, View } from "react-native";
 import Workout from "@/models/Workout";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import useAuth from "@/hooks/useAuth";
+import WorkoutService from "@/services/WorkoutService";
+import WorkoutParticipant from "@/models/WorkoutParticipant";
 
 // export type Workout = {
 //     id: number;
@@ -56,7 +58,14 @@ export default function WorkoutList() {
     useEffect(() => {
         const fetchWorkouts = async () => {
             const data = await workoutManager!.getWorkouts()!;
-            setWorkouts(data);
+            const workouts : Workout[] = [];
+            const result = await WorkoutService.getList();
+            if(result.status == 200){
+                for(var w of result.data.workouts){
+                    workouts.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(auth.user, w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
+                }
+            }
+            setWorkouts(work => [...work, ...workouts]);
         };
 
         fetchWorkouts();

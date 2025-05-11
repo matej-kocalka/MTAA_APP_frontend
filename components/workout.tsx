@@ -35,7 +35,7 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
                 {workoutProps.data.start.getDay() + ". " + (workoutProps.data.start.getMonth() + 1) + ". " + workoutProps.data.start.getFullYear()}
             </ThemedText>
             <ThemedText style={{}}>
-                {participant?.total_distance.toFixed(2) + " m"}
+                {participant?.total_distance ? participant?.total_distance.toFixed(2) + " m" : ""}
             </ThemedText>
         </ThemedContainer>
     );

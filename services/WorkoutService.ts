@@ -68,7 +68,7 @@ class WorkoutService {
             Authorization: `Bearer ${this.token}`,
             },
         });
-        return response.data;
+        return response;
     }
 
     async getData(workout_id: number, from_sample: number) {
