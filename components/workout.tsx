@@ -35,7 +35,7 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
                 {workoutProps.data.start.getDay() + ". " + (workoutProps.data.start.getMonth() + 1) + ". " + workoutProps.data.start.getFullYear()}
             </ThemedText>
             <ThemedText style={{}}>
-                {participant?.total_distance + " km"}
+                {participant?.total_distance.toFixed(2) + " m"}
             </ThemedText>
         </ThemedContainer>
     );
@@ -57,13 +57,13 @@ const WorkoutInfoBox = (workoutProps: WorkoutPropsProgress) => {
                 </View>
                 <View>
                     <ThemedText style={{ textAlign: "right" }}>Distance:</ThemedText>
-                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.distance + " km"}</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.distance.toFixed(2) + " m"}</ThemedText>
                 </View>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <View>
                     <ThemedText>Current Speed:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance + " km/h"}</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance.toFixed(2) + " km/h"}</ThemedText>
                 </View>
                 <View>
                     <ThemedText style={{ textAlign: "right" }}>Steps:</ThemedText>
@@ -90,13 +90,13 @@ const WorkoutInfoBoxResults = (workoutProps: WorkoutPropsProgress) => {
                 </View>
                 <View>
                     <ThemedText style={{ textAlign: "right" }}>Distance:</ThemedText>
-                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.distance + " km"}</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.distance.toFixed(2) + " m"}</ThemedText>
                 </View>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <View>
                     <ThemedText>Average speed:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance + " km/h"}</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance.toFixed(2) + " km/h"}</ThemedText>
                 </View>
                 <View>
                     <ThemedText style={{ textAlign: "right" }}>Steps:</ThemedText>

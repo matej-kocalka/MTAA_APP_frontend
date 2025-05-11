@@ -1,6 +1,7 @@
 import AuthService from '@/services/AuthService';
 import User from '@/models/User';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import WorkoutService from '@/services/WorkoutService';
 
 class AuthManager {
   private user: User | null = null;
@@ -9,6 +10,7 @@ class AuthManager {
     const data = await AuthService.login(email, password);
     const user_info = await AuthService.getUser(data.token);
     this.user = new User(user_info.user_id, user_info.email, user_info.user_name, data.token);
+    WorkoutService.setToken(data.token);
     await AsyncStorage.setItem('user', JSON.stringify(this.user));
     return this.user;
   }

@@ -27,7 +27,7 @@ const WorkoutDataContainer = (data: WorkoutData) => {
                     {data.duration}
                 </ThemedText>
                 <ThemedText style={{flex: 0.5}}>
-                    {data.distance + " km"}
+                    {data.distance.toPrecision() + " m"}
                 </ThemedText>
             </ThemedContainer>
             <ThemedContainer style={{flexDirection: "row"}}>

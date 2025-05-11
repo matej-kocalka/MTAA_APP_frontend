@@ -68,7 +68,7 @@ export default function currentWorkout() {
     //const [maxCoords, setMaxCoords] = useState<LatLng>(0);
 
     const handleWorkoutStart = () => {
-        try { workoutManager!.startNewWorkout(Math.floor(Math.random() * (512 + 1)), name, auth.user) } catch (e) { console.log(e); }
+        try { workoutManager!.startNewWorkout(name, auth.user) } catch (e) { console.log(e); }
         setWorkout(true);
     };
 
@@ -87,6 +87,7 @@ export default function currentWorkout() {
 
                 setWorkoutProgress(wp);
             }
+            workoutManager!.sendData();
 
             let c= workoutManager!.getCurrentCoords();
             if(c) {
