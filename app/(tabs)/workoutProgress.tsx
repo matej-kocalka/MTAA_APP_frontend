@@ -15,6 +15,8 @@ import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, {LatLng, Polyline} from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
+import useWebSocket from "react-use-websocket";
+import { WEB_SOCKET_URL } from "@/constants/api";
 
 
 export type WorkoutProgress = {
@@ -81,6 +83,10 @@ export default function currentWorkout() {
         router.navigate({ pathname: "/(tabs)/workoutList"});
         router.push({ pathname: "/workoutDetail", params: { id: workout?.w_id } })
     };
+
+    const {sendJsonMessage} = useWebSocket(WEB_SOCKET_URL, {
+        share: true,
+    })
 
     useEffect(() => {   // refreshing
         const interval = setInterval(() => {
