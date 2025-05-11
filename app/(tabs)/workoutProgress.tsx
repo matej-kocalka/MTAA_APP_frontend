@@ -36,14 +36,6 @@ Geolocation.setRNConfiguration({
     skipPermissionRequests:false,
 });
 
-/*
-[{latitude: 0, longitude: 10},
-{latitude: 10, longitude: 15},
-{latitude: 15, longitude: 10},
-{latitude: 0, longitude: 123},
-{latitude: 2, longitude: 4},
-{latitude: 2, longitude: 51}]
-    */
 const router = useRouter();
 
 export default function currentWorkout() {

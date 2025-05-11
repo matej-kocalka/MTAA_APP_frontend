@@ -21,8 +21,8 @@ import { Colors } from "@/constants/colors";
 
 export default function Index() {
   const router = useRouter();
-  const [email, setEmail] = useState("test@gmail.com");
-  const [password, setPassword] = useState("pass");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const auth = useContext(AuthContext);
   const colorScheme = useColorScheme();
   const theme = colorScheme ? Colors[colorScheme] : Colors.light;

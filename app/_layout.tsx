@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { AuthProvider } from "@/context/AuthContext";
+import { FriendsProvider } from "@/context/FriendsContext";
 import { WorkoutProvider } from "@/context/WorkoutContext";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
@@ -18,16 +19,18 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <WorkoutProvider>
-        <Stack screenOptions={{
-          headerStyle: {
-            backgroundColor: theme.tabsBackground,
-          },
-          headerTintColor: theme.headerColor,
-        }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      </WorkoutProvider>
+      <FriendsProvider>
+        <WorkoutProvider>
+          <Stack screenOptions={{
+            headerStyle: {
+              backgroundColor: theme.tabsBackground,
+            },
+            headerTintColor: theme.headerColor,
+          }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        </WorkoutProvider>
+      </FriendsProvider>
     </AuthProvider>
   );
 }

@@ -84,7 +84,7 @@ export default function WorkoutList() {
                 contentInsetAdjustmentBehavior="automatic"
                 data={workouts}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => router.push({ pathname: "/workoutDetail", params: { id: item.w_id, name: item.name } })}><WorkoutContainer onDelete={onDelete} data={item} /></TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push({ pathname: "/workoutDetail", params: { id: item.w_id } })}><WorkoutContainer onDelete={onDelete} data={item} /></TouchableOpacity>
                 )}
                 keyExtractor={(item) => item.w_id.toString()}
             />

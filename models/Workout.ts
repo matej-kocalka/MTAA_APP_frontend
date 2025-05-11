@@ -36,7 +36,7 @@ export default class Workout {
     if (user) {
       const participant = this.participants.find(u => u.user.id === user.id);
       if (participant) {
-        const endTime: Date = new Date(Date.parse(participant.samples[participant.samples.length - 1].sample_time));
+        const endTime: Date = participant.samples[participant.samples.length - 1].sample_time;
         const elapsedMs: number = (endTime.getTime()) - (this.start.getTime());
         const hours: number = Math.floor(elapsedMs / (1000 * 60 * 60));
         const minutes: number = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));

@@ -1,72 +1,238 @@
-import FriendContainer from "@/components/friend";
+import { FriendContainer, FriendRequest } from "@/components/friend";
 import ThemedButton from "@/components/ThemedButton";
+import ThemedContainer from "@/components/ThemedContainer";
+import ThemedText from "@/components/ThemedText";
 import { Colors } from "@/constants/colors";
-import { useNavigation } from "expo-router";
-import { useLayoutEffect, useState } from "react";
-import { FlatList, TouchableOpacity, useColorScheme, View, Text } from "react-native";
+import { FriendsContext } from "@/context/FriendsContext";
+import useAuth from "@/hooks/useAuth";
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect, useNavigation } from "expo-router";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { StyleSheet, FlatList, TouchableOpacity, useColorScheme, View, Text, Modal, TextInput, ScrollView } from "react-native";
+import NetInfo from '@react-native-community/netinfo';
 
 export type Friend = {
     id: number;
     name: string;
+    email: string;
     profilePic: any;
+    request: boolean;
 };
-
 
 
 export default function FriendList() {
     const navigation = useNavigation();
     useLayoutEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <TouchableOpacity style={{
-                    backgroundColor: theme.secondaryAccent,
-                    padding: 5,
-                    borderRadius: 5,
-                    marginRight: 15,
-                }} onPress={() => alert('To be completed')}>
-                    <Text style={{
-                        color: theme.buttonTextColor,
-                        fontWeight: 'bold',
-                    }}> Add friends </Text></TouchableOpacity>
-            ),
-        });
+        if (isOnline) {
+            navigation.setOptions({
+                headerRight: () => (
+                    <TouchableOpacity style={{
+                        backgroundColor: theme.secondaryAccent,
+                        padding: 5,
+                        borderRadius: 5,
+                        marginRight: 15,
+                    }} onPress={() => {
+                        setRefresh(prev => prev + 1);
+                        setVisible(true);
+                    }}>
+                        <Text style={{
+                            color: theme.buttonTextColor,
+                            fontWeight: 'bold',
+                        }}> Add friends </Text></TouchableOpacity>
+                ),
+            });
+        }
     }, [navigation]);
 
-    const [friends, setFriends] = useState<Friend[]>([  //Dummy friends
-        {
-            id: 1,
-            name: "John",
-            profilePic: require('../../assets/images/favicon.png'),
-        },
-        {
-            id: 2,
-            name: "Alena",
-            profilePic: require('../../assets/images/favicon.png'),
-        },
-        {
-            id: 3,
-            name: "Bob",
-            profilePic: require('../../assets/images/favicon.png'),
-        },
-        {
-            id: 4,
-            name: "Alice",
-            profilePic: require('../../assets/images/favicon.png'),
-        },
-    ]);
+    const [isOnline, setOnline] = useState(true);
+    const auth = useAuth();
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
-    // const [friends, setWorkouts] = useState<Friend[]>([])
-    return (
+    const [friendList, setFriendList] = useState<Friend[]>([])
+    const friends = useContext(FriendsContext);
+
+    const [refresh, setRefresh] = useState(0);
+
+    const styles = StyleSheet.create({
+        modalView: {
+            margin: 20,
+            padding: 20,
+            width: "auto",
+            height: "auto",
+            borderRadius: 10,
+            alignItems: "center",
+            elevation: 5
+        },
+        modalBackground: {
+            flex: 1,
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)'
+        },
+        modalContainer: {
+            margin: 20,
+            backgroundColor: theme.backgroundColor,
+            borderRadius: 10,
+            padding: 20
+        },
+        title: {
+            fontSize: 20,
+            marginBottom: 10,
+            fontWeight: 'bold',
+            color: theme.textColor,
+        },
+        input: {
+            padding: 10,
+            marginBottom: 10,
+            borderRadius: 5,
+            color: theme.textColor,
+            backgroundColor: theme.tabsBackground,
+        },
+        buttonRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+        },
+        modalButton: {
+            backgroundColor: theme.secondaryAccent,
+            paddingVertical: 10,
+            paddingHorizontal: 15,
+            borderRadius: 5,
+            marginTop: 10
+        },
+        buttonText: {
+            color: theme.buttonTextColor,
+            fontWeight: 'bold',
+            textAlign: "center",
+            flexGrow: 1
+        },
+
+        topBarButton: {
+            backgroundColor: theme.secondaryAccent,
+            padding: 5,
+            borderRadius: 5,
+            marginRight: 15,
+        }
+    })
+    const [visible, setVisible] = useState(false);
+    const [friendsEmail, setFriendsEmail] = useState("");
+    let addFriendModal = (
+        <Modal
+            visible={visible}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setVisible(false)}
+        >
+            <View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.title}>Add a new friend</Text>
+                    <TextInput
+                        placeholder="Friend's email"
+                        value={friendsEmail}
+                        onChangeText={setFriendsEmail}
+                        style={styles.input}
+                    />
+                    <View style={styles.buttonRow}>
+                        <TouchableOpacity
+                            style={[styles.modalButton, { backgroundColor: 'gray' }]}
+                            onPress={() => setVisible(false)}
+                        >
+                            <Text style={styles.buttonText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.modalButton} onPress={() => { if (friendsEmail.trim() === '') { alert("Email cannot be empty!") } else { friends?.addFriends(auth.user!, friendsEmail.trim()); setVisible(false); } }}>
+                            <Text style={styles.buttonText}>Send request</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>)
+
+    useFocusEffect(() => {
+        const list = async () => {
+            const l = await friends?.getFriends(auth.user!);
+            if (l) {
+                const friends: Friend[] = l?.map(user => ({
+                    id: user.id,
+                    name: user.username,
+                    email: user.email,
+                    profilePic: user.token, //both will be empty strings
+                    request: false,
+                }))
+                return friends;
+            }
+        }
+
+        const requestList = async () => {
+            const l = await friends?.getRequests(auth.user!);
+            if (l) {
+                const friends: Friend[] = l?.map(user => ({
+                    id: user.id,
+                    name: user.username,
+                    email: user.email,
+                    profilePic: user.token, //both will be empty strings
+                    request: true,
+                }))
+                return friends;
+            }
+        }
+
+        const combine = async () => {
+            const l = await list();
+            const r = await requestList();
+            if (l && r) {
+                const combined = [...l, ...r];
+                setFriendList(combined);
+                console.log(combined);
+            }
+        }
+
+        NetInfo.fetch().then(state => {
+            const i = state.isConnected && state.isInternetReachable;
+            if (i)
+                setOnline(true);
+            else
+                setOnline(false);
+        });
+        if (isOnline) combine();
+
+    }, );
+
+    if (isOnline) {
+        if (friendList.length === 0) {
+            return (
+                <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
+                    <ThemedContainer>
+                        <View style={{ alignItems: "center", margin: 30 }}><Ionicons name="people" size={100} color={theme.accentColor} /></View>
+                        <ThemedText style={{ textAlign: "center", fontSize: 20, margin: 10, marginBottom: 20 }}>No friends yet</ThemedText>
+                    </ThemedContainer>
+                    {addFriendModal}
+                </View>
+            )
+        } else {
+            return (
+                <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
+                    <FlatList<Friend>
+                        contentInsetAdjustmentBehavior="automatic"
+                        data={friendList}
+                        renderItem={({ item }) => {
+                            if (item.request) {
+                                return <FriendRequest data={item} user={auth.user!} friendManager={friends!} />;
+                            }
+                            return <FriendContainer data={item} user={auth.user!} friendManager={friends!} />;
+                        }}
+                        keyExtractor={(item) => item.id.toString()}
+                    />
+                    {addFriendModal}
+
+
+                </View>
+            )
+        }
+    }
+    else return (
         <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
-            <FlatList<Friend>
-                contentInsetAdjustmentBehavior="automatic"
-                data={friends}
-                renderItem={({ item }) => (
-                    <FriendContainer data={item} />
-                )}
-                keyExtractor={(item) => item.id.toString()}
-            />
+            <ThemedContainer>
+                <View style={{ alignItems: "center", margin: 30 }}><Ionicons name="cloud-offline" size={100} color={theme.accentColor} /></View>
+                <ThemedText style={{ textAlign: "center", fontSize: 20, margin: 10, marginBottom: 20 }}>You are offline</ThemedText>
+            </ThemedContainer>
         </View>
     )
 }
