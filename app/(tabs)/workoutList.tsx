@@ -65,6 +65,11 @@ export default function WorkoutList() {
                 work.push(w);
             }
         }
+        
+        const i : number = workoutManager?.workouts.findIndex(p => p.w_id == workout.w_id);
+        workoutManager!.workouts.splice(i, 1);
+
+        workoutManager.StoreNewWorkoutArray();
         setWorkouts(work);
     }
 
