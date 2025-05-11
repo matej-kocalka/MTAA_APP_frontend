@@ -2,6 +2,7 @@ import axios from 'axios';
 import { API_URL } from '@/constants/api';
 import useAuth from "@/hooks/useAuth";
 import WorkoutDataSample from "@/models/WorkoutDataSample";
+import WorkoutParticipant from '@/models/WorkoutParticipant';
 
 class WorkoutService {
     private token = "";
@@ -39,7 +40,6 @@ class WorkoutService {
             "workout_name": workout_name,
             "workout_start": this.DateToString(workout_start)
         });
-        console.log(params);
         const response = await axios.post(`${API_URL}/workout/createWorkout`, params, {
             headers: {
             Authorization: `Bearer ${this.token}`,
@@ -63,7 +63,20 @@ class WorkoutService {
         return response;
     }
 
-    async updateParticipantData() {
+    async updateParticipantData(workout_id: number, participant: WorkoutParticipant) {
+        const params = JSON.stringify({
+            "workout_id": workout_id,
+            "total_distance": participant.total_distance,
+            "avg_speed": participant.avg_speed,
+            "maxSpeed": participant.max_speed
+        });
+        const response = await axios.put(`${API_URL}/workout/updateParticipantData`, params, {
+            headers: {
+            Authorization: `Bearer ${this.token}`,
+            "Content-Type": "application/json"
+            },
+        });
+        return response;
     }
 
     async getList() {

@@ -19,6 +19,8 @@ export default class WorkoutManager {
     private watchId: number | null = null;
     private currentCoords: LatLng | null = null;
     private workouts: Workout[] = [];
+    private timeStamps: Float[] = [];
+    private distanceStamps: Float [] = [];
 
     private QUEUE_KEY = 'workout_queue';
     privateSendDataCounter = 0;
@@ -64,6 +66,7 @@ export default class WorkoutManager {
         //this.currentParticipant!.samples = [...this.currentParticipant!.samples, new WorkoutDataSample(1, new Date(), 0, 0)];
         this.stopPedometerTracking();
         this.stopLocationTracking();
+        this.workoutUploadData()
         this.addWorkoutToQueue(this.currentWorkout!);
         this.currentWorkout = null;
         this.currentParticipant = null;
@@ -136,6 +139,15 @@ export default class WorkoutManager {
             console.error("Error retrieving workouts from storage:", error);
             return [];
         }*/
+        const workoutsBackend : Workout[] = [];
+        const result = await WorkoutService.getList();
+        if(result.status == 200){
+            for(var w of result.data.workouts){
+                workoutsBackend.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(this.currentUser, w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
+            }
+        }
+        this.workouts = [...workoutsBackend];
+        return workoutsBackend;
     }
 
     getCurrentParticipant(){
@@ -233,6 +245,22 @@ export default class WorkoutManager {
                 if(this.currentCoords){
                     let dist = this.distance(position.coords.latitude, position.coords.longitude, this.currentCoords!.latitude, this.currentCoords!.longitude);
                     this.currentParticipant!.total_distance += this.distance(latitude, longitude, this.currentCoords!.latitude, this.currentCoords!.longitude);
+                    if( this.distanceStamps.length < 5){
+                        this.distanceStamps = [dist, ...this.distanceStamps];
+                        this.timeStamps = [(new Date()).getTime(), ...this.timeStamps]
+                    } else {
+                        this.distanceStamps = [dist, ...this.distanceStamps];
+                        this.distanceStamps.pop();
+
+                        var distTotal = 0;
+                        for (var n of this.distanceStamps){
+                            distTotal += n;
+                        }
+                        var timeTotal = ((new Date()).getTime() -this.timeStamps[0])/1000.0; 
+                        const speed = (distTotal/timeTotal )*3.6;
+                        this.currentParticipant!.current_speed = speed;
+                        if (this.currentParticipant!.max_speed < speed) this.currentParticipant!.max_speed = speed;
+                    }
                 }
                 this.currentParticipant!.samples = [...this.currentParticipant!.samples, {s_id: null, sample_time: (new Date()), position_lat: latitude, position_lon: longitude}];
                 this.currentParticipant!.samplesNotSent = [...this.currentParticipant!.samplesNotSent, {s_id: null, sample_time: (new Date()), position_lat: latitude, position_lon: longitude}];
@@ -249,12 +277,10 @@ export default class WorkoutManager {
             }
         )
         this.watchId = Number(res);
-        console.log(this.watchId);
     }
 
     stopLocationTracking(){
         if (this.watchId){
-            console.log(1);
             Geolocation.clearWatch(this.watchId);
             this.watchId = null;
         }
@@ -286,6 +312,9 @@ export default class WorkoutManager {
             if (status != 201){
                 this.currentParticipant!.samplesNotSent = [...samplesToSent, ...this.currentParticipant!.samplesNotSent]
             }
+            if(this.currentWorkout && this.currentParticipant){
+                await WorkoutService.updateParticipantData(this.currentWorkout.w_id, this.currentParticipant);
+            }
         }
     }
 
@@ -296,5 +325,9 @@ export default class WorkoutManager {
             this.workoutUploadData();
             this.privateSendDataCounter = 0;
         }
+    }
+
+    setUser(user){
+        this.currentUser = user;
     }
 }

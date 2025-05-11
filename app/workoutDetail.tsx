@@ -56,6 +56,7 @@ export default function currentWorkout() {
                 const path = [];
                 for(var s of result.data.samples){
                     path.push({sample_time: s.sample_time, coords:{latitude: s.position_lat, longitude: s.position_lon}});
+                    currentUser?.samples.push({s_id: s.sample_id, sample_time: s.sample_time, position_lat: s.position_lat, position_lon: s.position_lon})
                 }
                 path.sort((a,b)=>a.sample_time > b.sample_time ? 1: -1);
                 const coords = [];
@@ -85,10 +86,6 @@ export default function currentWorkout() {
         };
         fetchWorkout();
     }, [id]);
-
-    useEffect(()=>{
-        console.log(userPath);
-    }, [userPath])
 
     const navigation = useNavigation();
     useLayoutEffect(() => {

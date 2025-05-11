@@ -55,17 +55,24 @@ export default function WorkoutList() {
     const [workouts, setWorkouts] = useState<Workout[]>([])
     const pathname = usePathname();
 
+    const onDelete = (workout: Workout) => {
+        if(workout.w_id){
+            WorkoutService.deleteWorkout(workout.w_id);
+        }
+        const work = [];
+        for (var w of workouts){
+            if (w.w_id != workout.w_id){
+                work.push(w);
+            }
+        }
+        setWorkouts(work);
+    }
+
     useEffect(() => {
         const fetchWorkouts = async () => {
+            workoutManager?.setUser(auth.user);
             const data = await workoutManager!.getWorkouts()!;
-            const workouts : Workout[] = [];
-            const result = await WorkoutService.getList();
-            if(result.status == 200){
-                for(var w of result.data.workouts){
-                    workouts.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(auth.user, w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
-                }
-            }
-            setWorkouts(work => [/*...work, */...workouts]);
+            setWorkouts(work => [/*...work, */...data]);
         };
 
         fetchWorkouts();
@@ -77,7 +84,7 @@ export default function WorkoutList() {
                 contentInsetAdjustmentBehavior="automatic"
                 data={workouts}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => router.push({ pathname: "/workoutDetail", params: { id: item.w_id } })}><WorkoutContainer data={item} /></TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push({ pathname: "/workoutDetail", params: { id: item.w_id, name: item.name } })}><WorkoutContainer onDelete={onDelete} data={item} /></TouchableOpacity>
                 )}
                 keyExtractor={(item) => item.w_id.toString()}
             />

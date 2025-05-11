@@ -1,7 +1,7 @@
 import React from "react";
 import Workout from "@/models/Workout";
 import { WorkoutProgress } from "@/app/(tabs)/workoutProgress"
-import { StyleSheet, View, Text, useColorScheme } from "react-native";
+import { StyleSheet, View, Text, useColorScheme, Touchable, TouchableOpacity } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import ThemedThouchable from "./ThemedTouchable";
 import ThemedText from "./ThemedText";
@@ -13,6 +13,7 @@ import WorkoutParticipant from "@/models/WorkoutParticipant";
 
 type WorkoutProps = {
     data: Workout;
+    onDelete: (workout: Workout) => void;
 };
 
 type WorkoutPropsProgress = {
@@ -28,15 +29,22 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
 
     return (
         <ThemedContainer>
-            <ThemedText style={[styles.WorkoutName, { color: theme.textAccent, }]}>
-                {workoutProps.data.name}
-            </ThemedText>
-            <ThemedText style={{}}>
-                {workoutProps.data.start.getDay() + ". " + (workoutProps.data.start.getMonth() + 1) + ". " + workoutProps.data.start.getFullYear()}
-            </ThemedText>
-            <ThemedText style={{}}>
-                {participant?.total_distance ? participant?.total_distance.toFixed(2) + " m" : ""}
-            </ThemedText>
+            <View style={{flexDirection:"row"}}>
+                <View style={{flex:1}}>
+                    <ThemedText style={[styles.WorkoutName, { color: theme.textAccent, }]}>
+                        {workoutProps.data.name}
+                    </ThemedText>
+                    <ThemedText style={{}}>
+                        {workoutProps.data.start.getDay() + ". " + (workoutProps.data.start.getMonth() + 1) + ". " + workoutProps.data.start.getFullYear()}
+                    </ThemedText>
+                    <ThemedText style={{}}>
+                        {participant?.total_distance ? participant?.total_distance.toFixed(2) + " m" : ""}
+                    </ThemedText>
+                </View>
+                <View style={{justifyContent:"center"}}>
+                    <TouchableOpacity onPress={() => workoutProps.onDelete(workoutProps.data)}> <ThemedText>Delete</ThemedText></TouchableOpacity>
+                </View>
+            </View>
         </ThemedContainer>
     );
 };
@@ -63,7 +71,7 @@ const WorkoutInfoBox = (workoutProps: WorkoutPropsProgress) => {
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <View>
                     <ThemedText>Current Speed:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance.toFixed(2) + " km/h"}</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.current_speed.toFixed(2) + " km/h"}</ThemedText>
                 </View>
                 <View>
                     <ThemedText style={{ textAlign: "right" }}>Steps:</ThemedText>
@@ -77,6 +85,8 @@ const WorkoutInfoBox = (workoutProps: WorkoutPropsProgress) => {
 const WorkoutInfoBoxResults = (workoutProps: WorkoutPropsProgress) => {
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+
+    var time = workoutProps.data.duration.split(":");
 
     return (
         <ThemedContainer>
@@ -96,7 +106,7 @@ const WorkoutInfoBoxResults = (workoutProps: WorkoutPropsProgress) => {
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <View>
                     <ThemedText>Average speed:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.distance.toFixed(2) + " km/h"}</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{((workoutProps.data.distance/(Number(time[0])*Number(3600+time[1])*60+Number(time[2])))*3.6).toFixed(2) + " km/h"}</ThemedText>
                 </View>
                 <View>
                     <ThemedText style={{ textAlign: "right" }}>Steps:</ThemedText>

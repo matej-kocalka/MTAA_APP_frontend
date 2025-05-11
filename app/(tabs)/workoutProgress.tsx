@@ -21,7 +21,7 @@ export type WorkoutProgress = {
     id: number;
     name: string;
     date: Date;
-    distance: number;
+    distance: Float;
     duration: string;
     current_speed: number;
     steps: number;
