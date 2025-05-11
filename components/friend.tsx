@@ -1,13 +1,20 @@
 import React from "react";
 import { Friend } from "@/app/(tabs)/friendsList"
-import { StyleSheet, Image, useColorScheme } from "react-native";
+import { StyleSheet, Image, useColorScheme, View } from "react-native";
 import ThemedThouchable from "./ThemedTouchable";
 import ThemedText from "./ThemedText";
 import { Colors } from "@/constants/colors";
+import ThemedContainer from "./ThemedContainer";
+import ThemedButton from "./ThemedButton";
+import User from "@/models/User";
+import FriendManager from "@/managers/FriendManager";
 
 type FriendProps = {
     data: Friend;
+    user: User;
+    friendManager: FriendManager;
 };
+
 
 const FriendContainer = (friendProps: FriendProps) => {
     const colorScheme = useColorScheme();
@@ -19,10 +26,48 @@ const FriendContainer = (friendProps: FriendProps) => {
                 source={friendProps.data.profilePic}
                 style={styles.image}
             />
-            <ThemedText style={[styles.FriendName, { color: theme.textAccent, }]}>
-                {friendProps.data.name}
-            </ThemedText>
+            <View>
+                <ThemedText style={[styles.FriendName, { color: theme.textAccent, }]}>
+                    {friendProps.data.name}
+                </ThemedText>
+                <ThemedText>
+                    {friendProps.data.email}
+                </ThemedText>
+            </View>
         </ThemedThouchable>
+    );
+};
+
+const handleAccept = async (data: Friend, user: User, friendManager: FriendManager) => {
+    await friendManager.acceptRequest(user, data.id);
+}
+
+const handleReject = async (data: Friend, user: User, friendManager: FriendManager) => {
+    await friendManager.rejectRequest(user, data.id);
+    console.log(data.id);
+    console.log(user.token);
+}
+
+const FriendRequest = (friendProps: FriendProps) => {
+    const colorScheme = useColorScheme();
+    const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+
+    return (
+        <ThemedContainer>
+            <View>
+                <ThemedText>Friend request from:</ThemedText>
+                <ThemedText style={[styles.FriendRequestName, { color: theme.textAccent }]}>
+                    {friendProps.data.name}
+                </ThemedText>
+                <ThemedText style={{ flexGrow: 1, textAlign: "center", fontSize: 18, marginBottom: 15 }}>
+                    {friendProps.data.email}
+                </ThemedText>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+                <ThemedButton style={{ marginInline: 0, flexGrow: 1, marginRight: 5 }} onPress={() => handleAccept(friendProps.data, friendProps.user, friendProps.friendManager)}>Accept</ThemedButton>
+                <ThemedButton style={{ marginInline: 0, flexGrow: 1, marginLeft: 5, backgroundColor: theme.deleteButton }} onPress={() => handleReject(friendProps.data, friendProps.user, friendProps.friendManager)}>Reject</ThemedButton>
+            </View>
+        </ThemedContainer>
     );
 };
 
@@ -32,12 +77,21 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 12,
     },
-    
+
     FriendName: {
-        flexGrow: 1,
+        // flexGrow: 1,
         fontSize: 35,
         fontWeight: "300",
     },
+
+    FriendRequestName: {
+        flexGrow: 1,
+        textAlign: "center",
+        fontSize: 35,
+        fontWeight: "300",
+        marginTop: 20,
+    },
+
 
     image: {
         backgroundColor: "white",
@@ -57,4 +111,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default FriendContainer;
+export { FriendContainer, FriendRequest };

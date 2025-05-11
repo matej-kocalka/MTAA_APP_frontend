@@ -1,18 +1,11 @@
-import ThemedButton from "@/components/ThemedButton";
 import ThemedContainer from "@/components/ThemedContainer";
 import { WorkoutInfoBoxResults } from "@/components/workout";
 import { Colors } from "@/constants/colors";
 import { useNavigation } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
-import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, SafeAreaView, Pressable, TextInput, Button, useColorScheme } from "react-native";
-import { Float } from "react-native/Libraries/Types/CodegenTypes";
-import Workout from "@/models/Workout";
-// import WorkoutManager from "@/managers/WorkoutManager";
+import { ScrollView, Text, StyleSheet, useColorScheme } from "react-native";
 import useAuth from "@/hooks/useAuth";
 import { WorkoutContext } from "@/context/WorkoutContext";
-import ThemedView from "@/components/ThemedView";
-import ThemedText from "@/components/ThemedText";
-import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 
 
