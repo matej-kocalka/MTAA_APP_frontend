@@ -17,6 +17,11 @@ class AuthManager {
     return this.user;
   }
 
+  async register(email: string, password: string): Promise<boolean> {
+    const result = await AuthService.register(email, password);
+    return result.status == 201;
+  }
+
   async logout() {
     this.user = null;
     await AsyncStorage.removeItem('user');

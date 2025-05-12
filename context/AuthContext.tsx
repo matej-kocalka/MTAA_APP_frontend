@@ -5,6 +5,7 @@ import User from '../models/User';
 type AuthContextType = {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   getToken: () => string | null;
 };
@@ -19,6 +20,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(loggedInUser);
   };
 
+  const register = async (email: string, password: string) => {
+    const result = await AuthManager.register(email, password);
+    return result;
+  };
+
   const logout = async () => {
     await AuthManager.logout();
     setUser(null);
@@ -29,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, getToken}}>
+    <AuthContext.Provider value={{ user, login, register, logout, getToken}}>
       {children}
     </AuthContext.Provider>
   );

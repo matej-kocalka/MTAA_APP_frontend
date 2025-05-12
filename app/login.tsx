@@ -38,6 +38,18 @@ export default function Index() {
     }
   };
 
+  const handleRegister = async () => {
+    try {
+       const result = await auth?.register(email, password);
+      if(result) {
+        handleLogin();
+      }
+    } catch (e) {
+      console.log(e)
+      Alert.alert('Login failed', 'Invalid credentials');
+    }
+  };
+
   const styles = StyleSheet.create({
     input: {
       fontSize: 16,
@@ -74,6 +86,7 @@ export default function Index() {
         <TextInput style={styles.inputContainer} placeholder="Email" value={email} onChangeText={setEmail} />
         <TextInput style={styles.inputContainer} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
         <ThemedButton onPress={handleLogin}>Login</ThemedButton>
+        <ThemedButton onPress={handleRegister}>Register</ThemedButton>
       </View>
     </View>
   );
