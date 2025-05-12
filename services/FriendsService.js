@@ -78,7 +78,7 @@ export const getFriendRequests = async (token) => {
 }
 
 export const acceptFriendRequest = async (token, friend_id) => {
-  const response = await axios.patch(`${API_URL}/friends/request/accept`, { data: { friend_id } }, {
+  const response = await axios.patch(`${API_URL}/friends/request/accept`, { friend_id }, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
