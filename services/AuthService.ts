@@ -20,6 +20,23 @@ class AuthService {
     return response.data;
 
   }
+
+  async changeUsername(token: string, username: string) {
+    const response = await axios.patch(`${API_URL}/user/change/username`, { username }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  }
+  async changePassword(token: string, password: string) {
+    const response = await axios.patch(`${API_URL}/user/change/password`, {  password }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  }
 }
 
 export default new AuthService();
