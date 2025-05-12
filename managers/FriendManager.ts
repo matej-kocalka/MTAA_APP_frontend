@@ -52,13 +52,10 @@ export default class FriendManager {
     }
 
     async getWorkouts(){
-                console.log("ping");
         const result = await WorkoutService.getListFriend(this.openedFriend.id);
-                console.log(result.data);
-        var workouts = []
+        var workouts : Workout[] = []
         if(result.status == 200){
             for(var w of result.data.workouts){
-                console.log(w);
                 workouts.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(new User(this.openedFriend.id, this.openedFriend.email, this.openedFriend.name, ""), w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
             }
         }

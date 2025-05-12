@@ -29,7 +29,7 @@ export default function WorkoutList() {
         const fetchWorkouts = async () => {
             const friend = friendManager.openedFriend;
             console.log(friend);
-            const data = await friendManager!.getWorkouts()!;
+            const data : Workout[] = await friendManager!.getWorkouts();
             setWorkouts(work => [...data]);
         };
 
@@ -42,7 +42,7 @@ export default function WorkoutList() {
                 contentInsetAdjustmentBehavior="automatic"
                 data={workouts}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => router.push({ pathname: "/workoutDetail", params: { id: item.w_id, userId: friendManager.openedFriend.id} })}></TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push({ pathname: "/workoutDetail", params: { id: item.w_id, userId: friendManager.openedFriend.id} })}><WorkoutContainer onDelete={() => {}} onShare={() => {}} data={item} /></TouchableOpacity>
                 )}
                 keyExtractor={(item) => item.w_id.toString()}
             />

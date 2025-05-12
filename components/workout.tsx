@@ -42,16 +42,22 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
                         {participant?.total_distance ? participant?.total_distance.toFixed(2) + " m" : ""}
                     </ThemedText>
                 </View>
-                <View style={{justifyContent:"center"}}>
-                    <TouchableOpacity onPress={() => workoutProps.onShare(workoutProps.data)}>
-                        <ThemedText>Share</ThemedText>
-                    </TouchableOpacity>
+                { workoutProps.data.participants[0].user.id == auth.user?.id ? 
+                <View style = {{flexDirection:"row", flex:0.2}}>
+                    <View style= {{flex: 1, alignItems:"center", justifyContent:"space-evenly"}}>
+                        <View >
+                            <TouchableOpacity onPress={() => workoutProps.onShare(workoutProps.data)}>
+                                <ThemedText>Share</ThemedText>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{}}>
+                            <TouchableOpacity onPress={() => workoutProps.onDelete(workoutProps.data)}>
+                                <ThemedText>Delete</ThemedText>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
-                <View style={{justifyContent:"center"}}>
-                    <TouchableOpacity onPress={() => workoutProps.onDelete(workoutProps.data)}>
-                        <ThemedText>Delete</ThemedText>
-                    </TouchableOpacity>
-                </View>
+                : null }
             </View>
         </ThemedContainer>
     );
