@@ -329,7 +329,7 @@ export default class WorkoutManager {
             if(ws){
                 const samplesArray = [];
                 for (var s of samplesToSent){
-                    samplesArray.push({sample_time: this.DateToString(s.sample_time), position_lat: s.position_lat, position_lon: s.position_lon})
+                    samplesArray.push({sample_time: this.DateToString(s.sample_time), position_lat: s.position_lat, position_lon: s.position_lon});
                 }
                 const message = JSON.stringify({
                     "workout_id": this.currentWorkout!.w_id,

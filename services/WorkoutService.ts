@@ -20,7 +20,7 @@ class WorkoutService {
     async uploadData(workout_id: number, samples: WorkoutDataSample[]) {
         const samplesArray = [];
         for (var s of samples){
-            samplesArray.push({sample_time: this.DateToString(s.sample_time), position_lat: s.position_lat, position_lon: s.position_lon})
+            samplesArray.push({sample_time: this.DateToString(s.sample_time), position_lat: s.position_lat, position_lon: s.position_lon});
         }
         const params = JSON.stringify({
             "workout_id": workout_id,

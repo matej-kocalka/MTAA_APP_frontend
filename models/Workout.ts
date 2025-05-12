@@ -36,12 +36,16 @@ export default class Workout {
     if (user) {
       const participant = this.participants.find(u => u.user.id === user.id);
       if (participant) {
-        const endTime: Date = participant.samples[participant.samples.length - 1].sample_time;
-        const elapsedMs: number = (endTime.getTime()) - (this.start.getTime());
-        const hours: number = Math.floor(elapsedMs / (1000 * 60 * 60));
-        const minutes: number = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds: number = Math.floor((elapsedMs % (1000 * 60)) / 1000);
-        const duration: string = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        var duration: string = "";
+        if(participant?.samples?.length > 0){
+
+          const endTime: Date = participant.samples[participant.samples.length - 1]!.sample_time;
+          const elapsedMs: number = (endTime.getTime()) - (this.start.getTime());
+          const hours: number = Math.floor(elapsedMs / (1000 * 60 * 60));
+          const minutes: number = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds: number = Math.floor((elapsedMs % (1000 * 60)) / 1000);
+          duration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
 
         const progress: WorkoutProgress = {
           id: this.w_id,
@@ -51,7 +55,7 @@ export default class Workout {
           duration: duration,
           current_speed: participant.avg_speed,
           steps: participant.steps,
-        }
+        };
         return progress;
       }
     }

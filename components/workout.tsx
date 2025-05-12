@@ -98,17 +98,17 @@ const WorkoutInfoBoxResults = (workoutProps: WorkoutPropsProgress) => {
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <View>
                     <ThemedText>Duration:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.duration}</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{workoutProps.data.duration ? workoutProps.data.duration : "00:00:00"}</ThemedText>
                 </View>
                 <View>
                     <ThemedText style={{ textAlign: "right" }}>Distance:</ThemedText>
-                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{workoutProps.data.distance.toFixed(2) + " m"}</ThemedText>
+                    <ThemedText style={[styles.WorkoutValue, { textAlign: "right" }]}>{(workoutProps.data.distance ? workoutProps.data.distance.toFixed(2) : 0) + " m"}</ThemedText>
                 </View>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <View>
                     <ThemedText>Average speed:</ThemedText>
-                    <ThemedText style={styles.WorkoutValue}>{((workoutProps.data.distance/(Number(time[0])*Number(3600+time[1])*60+Number(time[2])))*3.6).toFixed(2) + " km/h"}</ThemedText>
+                    <ThemedText style={styles.WorkoutValue}>{((workoutProps.data.distance/(Number(time[0])*Number(3600+time[1])*60+Number(time[2])))*3.6)?.toFixed(2) + " km/h"}</ThemedText>
                 </View>
                 <View>
                     <ThemedText style={{ textAlign: "right" }}>Steps:</ThemedText>

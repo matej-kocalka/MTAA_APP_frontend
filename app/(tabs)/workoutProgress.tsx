@@ -65,8 +65,8 @@ export default function currentWorkout() {
     //const [maxCoords, setMaxCoords] = useState<LatLng>(0);
 
     const handleWorkoutStart = () => {
-        try { workoutManager!.startNewWorkout(name, auth.user) } catch (e) { console.log(e); }
         setWorkout(true);
+        try { workoutManager!.startNewWorkout(name, auth.user) } catch (e) { console.log(e); }
     };
 
     const handleWorkoutStop = async () => {
@@ -78,6 +78,32 @@ export default function currentWorkout() {
         router.push({ pathname: "/workoutDetail", params: { id: workout?.w_id } })
     };
 
+
+    useEffect(() => {
+        
+        const interval = setInterval(() => {
+            if(isWorkout){
+                let wp = workoutManager!.getWorkoutProgress(auth.user);
+                if (wp) {
+
+                    setWorkoutProgress(wp);
+                }
+
+                workoutManager!.sendData(socketRef.current);
+
+                let c= workoutManager!.getCurrentCoords();
+                if(c) {
+                    setCurrentCoords(c);
+                }
+            }
+        }, 1000);
+
+        return () => {
+            clearInterval(interval);
+        }
+
+
+    }, [isWorkout])
 
     useEffect(() => {   // refreshing
         const ws = new WebSocket(`${WEB_SOCKET_URL}/workout/socket?token=${auth.getToken()}`)
@@ -97,26 +123,7 @@ export default function currentWorkout() {
         ws.onerror = (error) => {
             console.error(`WebSocket error: ${error}`);
         };
-        
-        const interval = setInterval(() => {
-
-            if(isWorkout){
-                let wp = workoutManager!.getWorkoutProgress(auth.user);
-                if (wp) {
-
-                    setWorkoutProgress(wp);
-                }
-
-                workoutManager!.sendData(socketRef.current);
-
-                let c= workoutManager!.getCurrentCoords();
-                if(c) {
-                    setCurrentCoords(c);
-                }
-            }
-        }, 1000);
         return () => {
-            clearInterval(interval);
             if (socketRef.current) {
                 socketRef.current.close();
             }
