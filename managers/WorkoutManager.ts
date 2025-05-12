@@ -244,53 +244,57 @@ export default class WorkoutManager {
 
         Geolocation.requestAuthorization(
             ()=>{
+                const res = Geolocation.watchPosition(
+                    async position => {
+                        const {latitude, longitude} = position.coords;
+                        if(this.currentCoords){
+                            let dist = this.distance(position.coords.latitude, position.coords.longitude, this.currentCoords!.latitude, this.currentCoords!.longitude);
+                            this.currentParticipant!.total_distance += this.distance(latitude, longitude, this.currentCoords!.latitude, this.currentCoords!.longitude);
+                            if( this.distanceStamps.length < 5){
+                                this.distanceStamps = [dist, ...this.distanceStamps];
+                                this.timeStamps = [(new Date()).getTime(), ...this.timeStamps]
+                            } else {
+                                this.distanceStamps = [dist, ...this.distanceStamps];
+                                this.distanceStamps.pop();
 
+                                var distTotal = 0;
+                                for (var n of this.distanceStamps){
+                                    distTotal += n;
+                                }
+                                var timeTotal = ((new Date()).getTime() -this.timeStamps[0])/1000.0; 
+                                const speed = (distTotal/timeTotal )*3.6;
+                                this.currentParticipant!.current_speed = speed;
+                                if (this.currentParticipant!.max_speed < speed) this.currentParticipant!.max_speed = speed;
+                            }
+                        }
+                        var newSampleTime = new Date();
+                        this.currentParticipant!.samples = [...this.currentParticipant!.samples, {s_id: null, sample_time: (newSampleTime), position_lat: latitude, position_lon: longitude}];
+                        this.currentParticipant!.samplesNotSent = [...this.currentParticipant!.samplesNotSent, {s_id: null, sample_time: (newSampleTime), position_lat: latitude, position_lon: longitude}];
+                        if(this.lastSample < newSampleTime) this.lastSample=newSampleTime;
+                        this.currentCoords = {latitude: latitude, longitude: longitude};
+                    },
+                    error => {
+                        console.log(error);
+                    },
+                    {
+                        enableHighAccuracy:true,
+                        distanceFilter: 0,
+                        interval: 5000,
+                        useSignificantChanges: true
+                    }
+                )
+                this.watchId = Number(res);
             },
             ()=>{
-
+                alert("Permission was denied, this workout will not have location tracking.");
+                const interval = setInterval(() => {
+                        var newSampleTime = new Date();
+                    this.currentParticipant!.samples = [...this.currentParticipant!.samples, {s_id: null, sample_time: (newSampleTime), position_lat: 0, position_lon: 0}];
+                    this.currentParticipant!.samplesNotSent = [...this.currentParticipant!.samplesNotSent, {s_id: null, sample_time: (newSampleTime), position_lat: 0, position_lon: 0}];
+                }
+                , 5000);
             }
         );
-
-        const res = Geolocation.watchPosition(
-            async position => {
-                const {latitude, longitude} = position.coords;
-                if(this.currentCoords){
-                    let dist = this.distance(position.coords.latitude, position.coords.longitude, this.currentCoords!.latitude, this.currentCoords!.longitude);
-                    this.currentParticipant!.total_distance += this.distance(latitude, longitude, this.currentCoords!.latitude, this.currentCoords!.longitude);
-                    if( this.distanceStamps.length < 5){
-                        this.distanceStamps = [dist, ...this.distanceStamps];
-                        this.timeStamps = [(new Date()).getTime(), ...this.timeStamps]
-                    } else {
-                        this.distanceStamps = [dist, ...this.distanceStamps];
-                        this.distanceStamps.pop();
-
-                        var distTotal = 0;
-                        for (var n of this.distanceStamps){
-                            distTotal += n;
-                        }
-                        var timeTotal = ((new Date()).getTime() -this.timeStamps[0])/1000.0; 
-                        const speed = (distTotal/timeTotal )*3.6;
-                        this.currentParticipant!.current_speed = speed;
-                        if (this.currentParticipant!.max_speed < speed) this.currentParticipant!.max_speed = speed;
-                    }
-                }
-                var newSampleTime = new Date();
-                this.currentParticipant!.samples = [...this.currentParticipant!.samples, {s_id: null, sample_time: (newSampleTime), position_lat: latitude, position_lon: longitude}];
-                this.currentParticipant!.samplesNotSent = [...this.currentParticipant!.samplesNotSent, {s_id: null, sample_time: (newSampleTime), position_lat: latitude, position_lon: longitude}];
-                if(this.lastSample < newSampleTime) this.lastSample=newSampleTime;
-                this.currentCoords = {latitude: latitude, longitude: longitude};
-            },
-            error => {
-                console.log(error);
-            },
-            {
-                enableHighAccuracy:true,
-                distanceFilter: 0,
-                interval: 5000,
-                useSignificantChanges: true
-            }
-        )
-        this.watchId = Number(res);
     }
 
     stopLocationTracking(){
