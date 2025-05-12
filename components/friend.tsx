@@ -1,6 +1,6 @@
 import React from "react";
 import { Friend } from "@/app/(tabs)/friendsList"
-import { StyleSheet, Image, useColorScheme, View } from "react-native";
+import { StyleSheet, Image, useColorScheme, View, Touchable, TouchableOpacity } from "react-native";
 import ThemedThouchable from "./ThemedTouchable";
 import ThemedText from "./ThemedText";
 import { Colors } from "@/constants/colors";
@@ -8,6 +8,7 @@ import ThemedContainer from "./ThemedContainer";
 import ThemedButton from "./ThemedButton";
 import User from "@/models/User";
 import FriendManager from "@/managers/FriendManager";
+import { router } from "expo-router";
 
 type FriendProps = {
     data: Friend;
@@ -17,24 +18,31 @@ type FriendProps = {
 
 
 const FriendContainer = (friendProps: FriendProps) => {
+    const openList = () =>{
+        friendProps.friendManager.openedFriend = friendProps.data;
+        console.log(friendProps.user.id);
+        router.push({ pathname: "/friendWorkoutList"});
+    }
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
 
     return (
-        <ThemedThouchable style={styles.FriendContainer}>
-            <Image
-                source={friendProps.data.profilePic}
-                style={styles.image}
-            />
-            <View>
-                <ThemedText style={[styles.FriendName, { color: theme.textAccent, }]}>
-                    {friendProps.data.name}
-                </ThemedText>
-                <ThemedText>
-                    {friendProps.data.email}
-                </ThemedText>
-            </View>
-        </ThemedThouchable>
+        <TouchableOpacity onPress={openList}>
+            <ThemedContainer style={styles.FriendContainer}  >
+                <Image
+                    source={friendProps.data.profilePic}
+                    style={styles.image}
+                />
+                <View>
+                    <ThemedText style={[styles.FriendName, { color: theme.textAccent, }]}>
+                        {friendProps.data.name}
+                    </ThemedText>
+                    <ThemedText>
+                        {friendProps.data.email}
+                    </ThemedText>
+                </View>
+            </ThemedContainer>
+        </TouchableOpacity>
     );
 };
 

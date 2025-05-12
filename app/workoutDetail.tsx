@@ -44,6 +44,7 @@ export default function currentWorkout() {
     const auth = useAuth();
     const workoutManager = useContext(WorkoutContext);
     const { id } = useLocalSearchParams();
+    const { userId } = useLocalSearchParams();
     const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset);
     const mapRef = useRef<MapView>();
     const [userPath, setUserPath] = useState<LatLng[]>([]);
@@ -62,11 +63,13 @@ export default function currentWorkout() {
             const workout = workoutManager?.getWorkout(Number(id));
             const result = await WorkoutService.getData(Number(id), 0);
             if(result.status == 200){
-                let currentUser = workout?.participants.find(p => p.user.id === auth.user.id);
+                let currentUser = workout?.participants.find(p => p.user.id === Number(userId));
                 const path = [];
                 for(var s of result.data.samples){
-                    path.push({sample_time: new Date(Date.parse(s.sample_time)), coords:{latitude: s.position_lat, longitude: s.position_lon}});
-                    currentUser?.samples.push({s_id: s.sample_id, sample_time: new Date(Date.parse(s.sample_time)), position_lat: s.position_lat, position_lon: s.position_lon})
+                        if(s.user_id == Number(userId)) {
+                        path.push({sample_time: new Date(Date.parse(s.sample_time)), coords:{latitude: s.position_lat, longitude: s.position_lon}});
+                        currentUser?.samples.push({s_id: s.sample_id, sample_time: new Date(Date.parse(s.sample_time)), position_lat: s.position_lat, position_lon: s.position_lon})
+                    }
                 }
                 path.sort((a,b)=>a.sample_time > b.sample_time ? 1: -1);
                 const coords = [];

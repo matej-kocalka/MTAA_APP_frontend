@@ -14,6 +14,7 @@ import WorkoutParticipant from "@/models/WorkoutParticipant";
 type WorkoutProps = {
     data: Workout;
     onDelete: (workout: Workout) => void;
+    onShare: (workout: Workout) => void;
 };
 
 type WorkoutPropsProgress = {
@@ -40,6 +41,11 @@ const WorkoutContainer = (workoutProps: WorkoutProps) => {
                     <ThemedText style={{}}>
                         {participant?.total_distance ? participant?.total_distance.toFixed(2) + " m" : ""}
                     </ThemedText>
+                </View>
+                <View style={{justifyContent:"center"}}>
+                    <TouchableOpacity onPress={() => workoutProps.onShare(workoutProps.data)}>
+                        <ThemedText>Share</ThemedText>
+                    </TouchableOpacity>
                 </View>
                 <View style={{justifyContent:"center"}}>
                     <TouchableOpacity onPress={() => workoutProps.onDelete(workoutProps.data)}>

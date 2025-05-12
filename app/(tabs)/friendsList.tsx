@@ -10,6 +10,7 @@ import { useFocusEffect, useNavigation } from "expo-router";
 import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { StyleSheet, FlatList, TouchableOpacity, useColorScheme, View, Text, Modal, TextInput, ScrollView } from "react-native";
 import NetInfo from '@react-native-community/netinfo';
+import ThemedThouchable from "@/components/ThemedTouchable";
 
 export type Friend = {
     id: number;
@@ -180,7 +181,7 @@ export default function FriendList() {
             if (l && r) {
                 const combined = [...l, ...r];
                 setFriendList(combined);
-                console.log(combined);
+                //console.log(combined);
             }
         }
 

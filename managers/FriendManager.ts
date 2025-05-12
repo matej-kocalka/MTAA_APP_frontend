@@ -1,10 +1,15 @@
+import { Friend } from "@/app/(tabs)/friendsList";
 import useAuth from "@/hooks/useAuth";
 import User from "@/models/User";
+import Workout from "@/models/Workout";
+import WorkoutParticipant from "@/models/WorkoutParticipant";
 import { createFriendRequest, getFriendList, getFriendProfile, acceptFriendRequest, rejectFriendRequest, getFriendRequests } from "@/services/FriendsService"
+import WorkoutService from "@/services/WorkoutService";
 
 export default class FriendManager {
     private friendList: User[] = [];
     private friendRequestList: User[] = [];
+    public openedFriend : Friend;
 
     async getFriends(currentUser: User) {
         type friendListRequest = {
@@ -44,5 +49,19 @@ export default class FriendManager {
 
     async rejectRequest(currentUser: User, friendId: number) {
         rejectFriendRequest(currentUser.token, friendId);
+    }
+
+    async getWorkouts(){
+                console.log("ping");
+        const result = await WorkoutService.getListFriend(this.openedFriend.id);
+                console.log(result.data);
+        var workouts = []
+        if(result.status == 200){
+            for(var w of result.data.workouts){
+                console.log(w);
+                workouts.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(new User(this.openedFriend.id, this.openedFriend.email, this.openedFriend.name, ""), w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
+            }
+        }
+        return workouts;
     }
 }

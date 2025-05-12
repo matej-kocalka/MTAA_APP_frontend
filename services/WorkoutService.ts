@@ -88,6 +88,15 @@ class WorkoutService {
         return response;
     }
 
+    async getListFriend(friend_id: number) {
+        const response = await axios.get(`${API_URL}/workout/getListFriend/${friend_id}`, {
+            headers: {
+            Authorization: `Bearer ${this.token}`,
+            },
+        });
+        return response;
+    }
+
     async getData(workout_id: number, from_sample: number) {
         const response = await axios.get(`${API_URL}/workout/getData/${workout_id}:${from_sample}`, {
             headers: {
@@ -106,10 +115,10 @@ class WorkoutService {
         return response;
     }
 
-    async shareWorkout(workout_id: number, shared_user_id: number) {
+    async shareWorkout(workout_id: number, shared_user_email: string) {
         const params = JSON.stringify({
             "workout_id": workout_id,
-            "shared_user_id": shared_user_id
+            "shared_user_email": shared_user_email
         });
         const response = await axios.put(`${API_URL}/workout/shareWorkout`, params, {
             headers: {
@@ -120,8 +129,8 @@ class WorkoutService {
         return response;
     }
 
-    async unshareWorkout(workout_id: number, shared_user_id: number) {
-        const response = await axios.delete(`${API_URL}/workout/unshareWorkout/${workout_id}:${shared_user_id}`, {
+    async unshareWorkout(workout_id: number, shared_user_email: string) {
+        const response = await axios.delete(`${API_URL}/workout/unshareWorkout/${workout_id}:${shared_user_email}`, {
             headers: {
             Authorization: `Bearer ${this.token}`,
             },
