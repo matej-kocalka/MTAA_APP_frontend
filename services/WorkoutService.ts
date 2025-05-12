@@ -49,10 +49,10 @@ class WorkoutService {
         return response;
     }
 
-    async addParticipant(workout_id : number, participant_id: number) {
+    async addParticipant(workout_id : number, participant_email: string) {
         const params = JSON.stringify({
             "workout_id": workout_id,
-            "participant_id": participant_id
+            "participant_email": participant_email
         });
         const response = await axios.put(`${API_URL}/workout/addParticipant`, params, {
             headers: {

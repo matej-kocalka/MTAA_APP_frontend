@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import MapView, {LatLng, Polyline} from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
 import { WEB_SOCKET_URL } from "@/constants/api";
+import WorkoutService from "@/services/WorkoutService";
 
 
 
@@ -77,7 +78,6 @@ export default function currentWorkout() {
         router.navigate({ pathname: "/(tabs)/workoutList"});
         router.push({ pathname: "/workoutDetail", params: { id: workout?.w_id } })
     };
-
 
     useEffect(() => {
         
@@ -190,7 +190,7 @@ export default function currentWorkout() {
     }, [navigation, isWorkout]);
 
     const [visible, setVisible] = useState(false);
-    const [friendName, setFriendName] = useState('');
+    const [friendEmail, setFriendEmail] = useState('');
     const [name, setName] = useState('');
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
@@ -294,15 +294,21 @@ export default function currentWorkout() {
                             <Text style={styles.title}>Add friend to Workout</Text>
 
                             <TextInput
-                                placeholder=""
-                                value={friendName}
-                                onChangeText={setFriendName}
+                                placeholder="friend's email"
+                                value={friendEmail}
+                                onChangeText={setFriendEmail}
                                 style={styles.input}
                             />
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
                                     style={[styles.modalButton, { backgroundColor: 'gray' }]}
-                                    onPress={() => setVisible(false)}
+                                    onPress={() => {
+                                        const result = WorkoutService.addParticipant(workoutManager!.getCurrentWorkout()!.w_id, friendEmail);
+                                        if( result.status != 201){
+                                            alert("Couldn't add friend");
+                                        }
+                                        setVisible(false);
+                                    }}
                                 >
                                     <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
