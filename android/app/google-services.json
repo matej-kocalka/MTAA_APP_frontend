@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "200148459409",
+    "project_id": "mtaa-app-e5eff",
+    "storage_bucket": "mtaa-app-e5eff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200148459409:android:d2d56e7cbd9f06ead74430",
+        "android_client_info": {
+          "package_name": "com.kocalkaurban.mtaa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAePJ9P2zmrpejiWELGqgZzX8ghJENMGFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
