@@ -3,13 +3,13 @@ import useAuth from "@/hooks/useAuth";
 import User from "@/models/User";
 import Workout from "@/models/Workout";
 import WorkoutParticipant from "@/models/WorkoutParticipant";
-import { createFriendRequest, getFriendList, getFriendProfile, acceptFriendRequest, rejectFriendRequest, getFriendRequests } from "@/services/FriendsService"
+import { createFriendRequest, getFriendList, getFriendProfile, acceptFriendRequest, rejectFriendRequest, getFriendRequests, removeFriend, getFriendProfilePicture } from "@/services/FriendsService"
 import WorkoutService from "@/services/WorkoutService";
 
 export default class FriendManager {
     private friendList: User[] = [];
     private friendRequestList: User[] = [];
-    public openedFriend : Friend;
+    public openedFriend: Friend | null = null;
 
     async getFriends(currentUser: User) {
         type friendListRequest = {
@@ -43,6 +43,10 @@ export default class FriendManager {
         createFriendRequest(currentUser.token, friendsEmail);
     }
 
+    async removeFriend(currentUser: User, friendId: number) {
+        removeFriend(currentUser.token, friendId);
+    }
+
     async acceptRequest(currentUser: User, friendId: number) {
         acceptFriendRequest(currentUser.token, friendId);
     }
@@ -51,14 +55,18 @@ export default class FriendManager {
         rejectFriendRequest(currentUser.token, friendId);
     }
 
-    async getWorkouts(){
-        const result = await WorkoutService.getListFriend(this.openedFriend.id);
-        var workouts : Workout[] = []
-        if(result.status == 200){
-            for(var w of result.data.workouts){
-                workouts.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(new User(this.openedFriend.id, this.openedFriend.email, this.openedFriend.name, ""), w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
+    async getWorkouts() {
+        const result = await WorkoutService.getListFriend(this.openedFriend!.id);
+        var workouts: Workout[] = []
+        if (result.status == 200) {
+            for (var w of result.data.workouts) {
+                workouts.push(new Workout(w.workout_id, w.workout_name, new Date(Date.parse(w.workout_start)), [new WorkoutParticipant(new User(this.openedFriend!.id, this.openedFriend!.email, this.openedFriend!.name, ""), w.total_distance, w.avg_speed, w.max_speed, 0, 0, [], [], [])]));
             }
         }
         return workouts;
+    }
+
+    async getFriendsProfilePicture(currentUser: User, friendId: number) {
+        return getFriendProfilePicture(currentUser.token, friendId);
     }
 }

@@ -9,18 +9,18 @@ class WorkoutService {
     public username = "";
     public pass = "";
 
-    setToken(token){
+    setToken(token) {
         this.token = token;
     }
 
-    DateToString(date: Date){
+    DateToString(date: Date) {
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
 
     async uploadData(workout_id: number, samples: WorkoutDataSample[]) {
         const samplesArray = [];
-        for (var s of samples){
-            samplesArray.push({sample_time: this.DateToString(s.sample_time), position_lat: s.position_lat, position_lon: s.position_lon});
+        for (var s of samples) {
+            samplesArray.push({ sample_time: this.DateToString(s.sample_time), position_lat: s.position_lat, position_lon: s.position_lon });
         }
         const params = JSON.stringify({
             "workout_id": workout_id,
@@ -28,36 +28,36 @@ class WorkoutService {
         });
         const response = await axios.post(`${API_URL}/workout/uploadData`, params, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json"
+                Authorization: `Bearer ${this.token}`,
+                "Content-Type": "application/json"
             },
         });
         return response.status;
     }
 
-    async createWorkout(workout_name: string, workout_start : Date) {
+    async createWorkout(workout_name: string, workout_start: Date) {
         const params = JSON.stringify({
             "workout_name": workout_name,
             "workout_start": this.DateToString(workout_start)
         });
         const response = await axios.post(`${API_URL}/workout/createWorkout`, params, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json"
+                Authorization: `Bearer ${this.token}`,
+                "Content-Type": "application/json"
             },
         });
         return response;
     }
 
-    async addParticipant(workout_id : number, participant_email: string) {
+    async addParticipant(workout_id: number, participant_email: string) {
         const params = JSON.stringify({
             "workout_id": workout_id,
             "participant_email": participant_email
         });
         const response = await axios.put(`${API_URL}/workout/addParticipant`, params, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json"
+                Authorization: `Bearer ${this.token}`,
+                "Content-Type": "application/json"
             },
         });
         return response;
@@ -72,26 +72,26 @@ class WorkoutService {
         });
         const response = await axios.put(`${API_URL}/workout/updateParticipantData`, params, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json"
+                Authorization: `Bearer ${this.token}`,
+                "Content-Type": "application/json"
             },
         });
         return response;
     }
 
     async getList() {
-        const response = await axios.get(`${API_URL}/workout/getList`, {
-            headers: {
-            Authorization: `Bearer ${this.token}`,
-            },
-        });
-        return response;
+            const response = await axios.get(`${API_URL}/workout/getList`, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            });
+            return response;
     }
 
     async getListFriend(friend_id: number) {
         const response = await axios.get(`${API_URL}/workout/getListFriend/${friend_id}`, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
+                Authorization: `Bearer ${this.token}`,
             },
         });
         return response;
@@ -100,7 +100,7 @@ class WorkoutService {
     async getData(workout_id: number, from_sample: number) {
         const response = await axios.get(`${API_URL}/workout/getData/${workout_id}:${from_sample}`, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
+                Authorization: `Bearer ${this.token}`,
             },
         });
         return response;
@@ -109,7 +109,7 @@ class WorkoutService {
     async deleteWorkout(workout_id: number) {
         const response = await axios.delete(`${API_URL}/workout/deleteWorkout/${workout_id}`, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
+                Authorization: `Bearer ${this.token}`,
             },
         });
         return response;
@@ -122,8 +122,8 @@ class WorkoutService {
         });
         const response = await axios.put(`${API_URL}/workout/shareWorkout`, params, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json"
+                Authorization: `Bearer ${this.token}`,
+                "Content-Type": "application/json"
             },
         });
         return response;
@@ -132,7 +132,7 @@ class WorkoutService {
     async unshareWorkout(workout_id: number, shared_user_email: string) {
         const response = await axios.delete(`${API_URL}/workout/unshareWorkout/${workout_id}:${shared_user_email}`, {
             headers: {
-            Authorization: `Bearer ${this.token}`,
+                Authorization: `Bearer ${this.token}`,
             },
         });
         return response;

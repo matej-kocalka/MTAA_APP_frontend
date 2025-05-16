@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Friend } from "@/app/(tabs)/friendsList"
 import { StyleSheet, Image, useColorScheme, View, Touchable, TouchableOpacity } from "react-native";
 import ThemedThouchable from "./ThemedTouchable";
@@ -9,6 +9,8 @@ import ThemedButton from "./ThemedButton";
 import User from "@/models/User";
 import FriendManager from "@/managers/FriendManager";
 import { router } from "expo-router";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
+import { downloadFriendsProfilePicture } from "@/services/FriendsService";
 
 type FriendProps = {
     data: Friend;
@@ -18,19 +20,21 @@ type FriendProps = {
 
 
 const FriendContainer = (friendProps: FriendProps) => {
-    const openList = () =>{
+    const openList = () => {
         friendProps.friendManager.openedFriend = friendProps.data;
-        console.log(friendProps.user.id);
-        router.push({ pathname: "/friendWorkoutList"});
+        // console.log(friendProps.user.id);
+        router.push({ pathname: "/friendWorkoutList" });
     }
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
+    const defaultImage = require("@/assets/images/profile.png");
+    const [ImageUri, setLocalImageUri] = useState(friendProps.data.profilePic)
 
     return (
         <TouchableOpacity onPress={openList}>
             <ThemedContainer style={styles.FriendContainer}  >
                 <Image
-                    source={friendProps.data.profilePic}
+                    source={ImageUri ? { uri: ImageUri + '?t=' + Date.now() } : defaultImage}
                     style={styles.image}
                 />
                 <View>
@@ -52,8 +56,8 @@ const handleAccept = async (data: Friend, user: User, friendManager: FriendManag
 
 const handleReject = async (data: Friend, user: User, friendManager: FriendManager) => {
     await friendManager.rejectRequest(user, data.id);
-    console.log(data.id);
-    console.log(user.token);
+    // console.log(data.id);
+    // console.log(user.token);
 }
 
 const FriendRequest = (friendProps: FriendProps) => {

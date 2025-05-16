@@ -15,12 +15,14 @@ export const getFriendList = async (token) => {
 }
 
 export const removeFriend = async (token, friend_id) => {
-  const response = await axios.delete(`${API_URL}/friends/remove`, { friend_id }, {
+  const response = await axios.delete(`${API_URL}/friends/remove`, {
     headers: {
-      'Authorization': `Bearer ${jwtToken}`,
-      'Content-Type': 'application/json'
-    }
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    data: { friend_id },
   });
+
   return response.data;
 }
 
@@ -97,3 +99,29 @@ export const rejectFriendRequest = async (token, friend_id) => {
   });
   return response.data;
 }
+
+export const downloadFriendsProfilePicture = async (token, friend_id) => {
+  const PROFILE_PIC_PATH = `${RNFS.DocumentDirectoryPath}/${friend_id}.jpg`;
+  try {
+    const response = await axios.post(`${API_URL}/friends/getphoto`,
+      { friend_id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        responseType: 'arraybuffer',
+      }
+    );
+
+    const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+
+    await RNFS.writeFile(PROFILE_PIC_PATH, base64Image, 'base64');
+
+    // console.log('Friend picture saved to:', PROFILE_PIC_PATH);
+    return 'file://' + PROFILE_PIC_PATH;
+  } catch (error) {
+    // console.log(error.response.data)
+    return null;
+  }
+};

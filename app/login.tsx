@@ -40,8 +40,8 @@ export default function Index() {
 
   const handleRegister = async () => {
     try {
-       const result = await auth?.register(email, password);
-      if(result) {
+      const result = await auth?.register(email, password);
+      if (result) {
         handleLogin();
       }
     } catch (e) {
@@ -81,8 +81,8 @@ export default function Index() {
   });
 
   return (
-    <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 ,justifyContent:"center", alignItems:"center"}}>
-      <View style={{paddingBottom:100, width:300}}>
+    <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ paddingBottom: 100, width: 300 }}>
         <TextInput style={styles.inputContainer} placeholder="Email" value={email} onChangeText={setEmail} />
         <TextInput style={styles.inputContainer} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
         <ThemedButton onPress={handleLogin}>Login</ThemedButton>

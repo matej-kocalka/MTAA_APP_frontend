@@ -4,7 +4,7 @@ import { WorkoutContainer, WorkoutInfoBox } from "@/components/workout";
 import { Colors } from "@/constants/colors";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useState, useRef } from "react";
-import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, SafeAreaView, Pressable, TextInput, Button, useColorScheme } from "react-native";
+import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, SafeAreaView, Pressable, TextInput, Button, useColorScheme, Platform, PermissionsAndroid } from "react-native";
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 import Workout from "@/models/Workout";
 // import WorkoutManager from "@/managers/WorkoutManager";
@@ -13,7 +13,7 @@ import { WorkoutContext } from "@/context/WorkoutContext";
 import ThemedView from "@/components/ThemedView";
 import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import MapView, {LatLng, Polyline} from "react-native-maps";
+import MapView, { LatLng, Polyline } from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
 import { WEB_SOCKET_URL } from "@/constants/api";
 import WorkoutService from "@/services/WorkoutService";
@@ -31,10 +31,10 @@ export type WorkoutProgress = {
 };
 
 Geolocation.setRNConfiguration({
-    authorizationLevel:'always',
-    enableBackgroundUpdates:true,
-    locationProvider:'auto',
-    skipPermissionRequests:false,
+    authorizationLevel: 'always',
+    enableBackgroundUpdates: true,
+    locationProvider: 'auto',
+    skipPermissionRequests: false,
 });
 
 const router = useRouter();
@@ -56,7 +56,7 @@ export default function currentWorkout() {
     const auth = useAuth();
     const workoutManager = useContext(WorkoutContext);
     const mapRef = useRef<MapView>();
-    const socketRef = useRef<WebSocket|null>(null);
+    const socketRef = useRef<WebSocket | null>(null);
     const [isWorkout, setWorkout] = useState(false);
     const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset)
     const [userPath, setUserPath] = useState<LatLng[]>([]);
@@ -75,14 +75,14 @@ export default function currentWorkout() {
         workoutManager!.finishWorkout();
         setWorkoutProgress(preset);
         setWorkout(false);
-        router.navigate({ pathname: "/(tabs)/workoutList"});
+        router.navigate({ pathname: "/(tabs)/workoutList" });
         router.push({ pathname: "/workoutDetail", params: { id: workout?.w_id } })
     };
 
     useEffect(() => {
-        
+
         const interval = setInterval(() => {
-            if(isWorkout){
+            if (isWorkout) {
                 let wp = workoutManager!.getWorkoutProgress(auth.user);
                 if (wp) {
 
@@ -91,8 +91,8 @@ export default function currentWorkout() {
 
                 workoutManager!.sendData(socketRef.current);
 
-                let c= workoutManager!.getCurrentCoords();
-                if(c) {
+                let c = workoutManager!.getCurrentCoords();
+                if (c) {
                     setCurrentCoords(c);
                 }
             }
@@ -121,7 +121,7 @@ export default function currentWorkout() {
         };
 
         ws.onerror = (error) => {
-            console.error(`WebSocket error: ${error}`);
+            console.log(`WebSocket error: ${error}`);
         };
         return () => {
             if (socketRef.current) {
@@ -130,8 +130,8 @@ export default function currentWorkout() {
         }; // Clean up on unmount
     }, []);
 
-    useEffect(()=>{
-        if(currentCoords != 0){
+    useEffect(() => {
+        if (currentCoords != 0) {
             setUserPath(coordinates => [...coordinates, currentCoords]);
             /*
             let minLat;
@@ -165,13 +165,13 @@ export default function currentWorkout() {
                 longitudeDelta: (maxLng-minLng) * 1.1
             });
             */
-            if(mapRef.current)
-            mapRef.current!.animateToRegion({
-                latitude: currentCoords.latitude,
-                longitude: currentCoords.longitude,
-                latitudeDelta: 0.0008,
-                longitudeDelta: 0.0008
-            });
+            if (mapRef.current)
+                mapRef.current!.animateToRegion({
+                    latitude: currentCoords.latitude,
+                    longitude: currentCoords.longitude,
+                    latitudeDelta: 0.0008,
+                    longitudeDelta: 0.0008
+                });
         }
     }, [currentCoords]);
 
@@ -259,11 +259,36 @@ export default function currentWorkout() {
         }
     })
 
+    const [hasPermission, setHasPermission] = useState(null);
+    const [steps, setSteps] = useState(0);
+
+    async function requestPermission() {
+        if (Platform.OS === "android" && Platform.Version >= 29) {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
+                );
+                setHasPermission(granted === PermissionsAndroid.RESULTS.GRANTED);
+            } catch (err) {
+                console.warn(err);
+                setHasPermission(false);
+            }
+        } else {
+            // iOS permission is automatically granted if you add NSMotionUsageDescription in infoPlist
+            setHasPermission(true);
+        }
+    }
+
+    useEffect(() => {
+        requestPermission();
+    }, []);
+
+
     if (isWorkout) {
         return (
             <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
                 <View style={styles.map}>
-                    <MapView 
+                    <MapView
                         style={styles.map}
                         ref={mapRef}
                         initialRefion={{
@@ -274,9 +299,9 @@ export default function currentWorkout() {
                         }}
                         showsBuildings={false}
                     >
-                    <Polyline coordinates={userPath}
-                        strokeColor="red"
-                        strokeWidth={3}/>
+                        <Polyline coordinates={userPath}
+                            strokeColor="red"
+                            strokeWidth={3} />
                     </MapView>
 
                 </View>
@@ -304,7 +329,7 @@ export default function currentWorkout() {
                                     style={[styles.modalButton, { backgroundColor: 'gray' }]}
                                     onPress={() => {
                                         const result = WorkoutService.addParticipant(workoutManager!.getCurrentWorkout()!.w_id, friendEmail);
-                                        if( result.status != 201){
+                                        if (result.status != 201) {
                                             alert("Couldn't add friend");
                                         }
                                         setVisible(false);

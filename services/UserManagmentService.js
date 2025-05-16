@@ -4,9 +4,9 @@ import { Buffer } from 'buffer';
 import { API_URL } from '@/constants/api';
 
 // const PROFILE_PIC_PATH = `${RNFS.DocumentDirectoryPath}/images/profile.jpg`;
+const FormData = global.FormData;
 
 export const downloadProfilePicture = async (token, filename) => {
-  
   const PROFILE_PIC_PATH = `${RNFS.DocumentDirectoryPath}/${filename}.jpg`;
   try {
     const response = await axios.get(`${API_URL}/user/get/photo`, {
@@ -28,3 +28,47 @@ export const downloadProfilePicture = async (token, filename) => {
 };
 
 export const getProfilePicturePath = (filename) => 'file://' + `${RNFS.DocumentDirectoryPath}/images/${filename}.jpg`;
+
+export const changePhoto = async (token, image) => {
+  try {
+    const formData = new FormData();
+    console.log(image.uri);
+    formData.append("image", {
+      uri: image.uri,
+      type: "image/jpeg",
+      name: "profile"
+    });
+
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+      transformRequest: () => {
+        return formData;
+      },
+    };
+
+    await axios.patch(`${API_URL}/user/change/photo`, formData, config)
+  } catch (error) {
+    console.error('Error uploading photo:', error.response.data);
+    throw error;
+  }
+};
+
+export const deleteUserProfile = async (token, password) => {
+  try {
+    console.log(token)
+    const response = await axios.delete(`${API_URL}/user/change/delete`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      data: {
+        password,
+      },
+    });
+    return response;
+  } catch (e) {
+    console.log(e.response?.data || e.message);
+  }
+};

@@ -7,10 +7,12 @@ import { FriendsContext } from "@/context/FriendsContext";
 import useAuth from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "expo-router";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
-import { StyleSheet, FlatList, TouchableOpacity, useColorScheme, View, Text, Modal, TextInput, ScrollView } from "react-native";
+import { useCallback, useContext, useEffect, useLayoutEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, useColorScheme, View, Text, Modal, TextInput, ScrollView, RefreshControl } from "react-native";
 import NetInfo from '@react-native-community/netinfo';
+import { downloadFriendsProfilePicture } from "@/services/FriendsService";
 import ThemedThouchable from "@/components/ThemedTouchable";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type Friend = {
     id: number;
@@ -33,7 +35,7 @@ export default function FriendList() {
                         borderRadius: 5,
                         marginRight: 15,
                     }} onPress={() => {
-                        setRefresh(prev => prev + 1);
+                        onRefresh();
                         setVisible(true);
                     }}>
                         <Text style={{
@@ -51,8 +53,6 @@ export default function FriendList() {
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
     const [friendList, setFriendList] = useState<Friend[]>([])
     const friends = useContext(FriendsContext);
-
-    const [refresh, setRefresh] = useState(0);
 
     const styles = StyleSheet.create({
         modalView: {
@@ -146,17 +146,23 @@ export default function FriendList() {
             </View>
         </Modal>)
 
-    useFocusEffect(() => {
+    const fetchPictures = async (friend_id: number) => {
+        return await downloadFriendsProfilePicture(auth.user!.token, friend_id)
+    }
+
+    const fetchFriends = async () => {
         const list = async () => {
             const l = await friends?.getFriends(auth.user!);
             if (l) {
-                const friends: Friend[] = l?.map(user => ({
-                    id: user.id,
-                    name: user.username,
-                    email: user.email,
-                    profilePic: user.token, //both will be empty strings
-                    request: false,
-                }))
+                const friends: Friend[] = await Promise.all(
+                    l.map(async user => ({
+                        id: user.id,
+                        name: user.username,
+                        email: user.email,
+                        profilePic: await fetchPictures(user.id),
+                        request: false,
+                    }))
+                );
                 return friends;
             }
         }
@@ -181,7 +187,6 @@ export default function FriendList() {
             if (l && r) {
                 const combined = [...l, ...r];
                 setFriendList(combined);
-                //console.log(combined);
             }
         }
 
@@ -193,39 +198,68 @@ export default function FriendList() {
                 setOnline(false);
         });
         if (isOnline) combine();
+    };
 
-    }, );
+    const [refreshing, setRefreshing] = useState(true);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchFriends();
+        setRefreshing(false);
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            onRefresh();
+        }, [])
+    )
+
+    
 
     if (isOnline) {
-        if (friendList.length === 0) {
+        if (refreshing) {
             return (
                 <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
-                    <ThemedContainer>
-                        <View style={{ alignItems: "center", margin: 30 }}><Ionicons name="people" size={100} color={theme.accentColor} /></View>
-                        <ThemedText style={{ textAlign: "center", fontSize: 20, margin: 10, marginBottom: 20 }}>No friends yet</ThemedText>
-                    </ThemedContainer>
-                    {addFriendModal}
+                        <ActivityIndicator size="large" color={theme.accentColor} />
                 </View>
-            )
+            );
         } else {
-            return (
-                <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
-                    <FlatList<Friend>
-                        contentInsetAdjustmentBehavior="automatic"
-                        data={friendList}
-                        renderItem={({ item }) => {
-                            if (item.request) {
-                                return <FriendRequest data={item} user={auth.user!} friendManager={friends!} />;
+            if (friendList.length === 0) {
+                return (
+                    <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }>
+                        <ThemedContainer>
+                            <View style={{ alignItems: "center", margin: 30 }}><Ionicons name="people" size={100} color={theme.accentColor} /></View>
+                            <ThemedText style={{ textAlign: "center", fontSize: 20, margin: 10, marginBottom: 20 }}>No friends yet</ThemedText>
+                        </ThemedContainer>
+                        {addFriendModal}
+                    </ScrollView>
+                )
+            } else {
+                return (
+                    <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
+                        <FlatList<Friend>
+                            contentInsetAdjustmentBehavior="automatic"
+                            data={friendList}
+                            renderItem={({ item }) => {
+                                if (item.request) {
+                                    return <FriendRequest data={item} user={auth.user!} friendManager={friends!} />;
+                                }
+                                return <FriendContainer data={item} user={auth.user!} friendManager={friends!} />;
+                            }}
+                            keyExtractor={(item) => item.id.toString()}
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                             }
-                            return <FriendContainer data={item} user={auth.user!} friendManager={friends!} />;
-                        }}
-                        keyExtractor={(item) => item.id.toString()}
-                    />
-                    {addFriendModal}
+                        />
+                        {addFriendModal}
 
 
-                </View>
-            )
+                    </View>
+                )
+            }
         }
     }
     else return (

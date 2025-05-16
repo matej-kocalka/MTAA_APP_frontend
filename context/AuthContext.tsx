@@ -8,6 +8,8 @@ type AuthContextType = {
   register: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   getToken: () => string | null;
+  checkLoggedInUser: () => Promise<boolean>;
+  updateUser: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -34,8 +36,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return AuthManager.getToken();
   }
 
+  const updateUser = () => {
+    return AuthManager.updateUser();
+  }
+
+  const checkLoggedInUser = async () => {
+    const loggedInUser = await AuthManager.checkLoggedInUser();
+    if (loggedInUser) {
+      setUser(loggedInUser);
+      return true;
+    } else return false;
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, getToken}}>
+    <AuthContext.Provider value={{ user, login, register, logout, getToken, checkLoggedInUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
