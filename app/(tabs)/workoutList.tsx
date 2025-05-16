@@ -10,6 +10,7 @@ import useAuth from "@/hooks/useAuth";
 import WorkoutService from "@/services/WorkoutService";
 import WorkoutParticipant from "@/models/WorkoutParticipant";
 import { FriendsContext } from "@/context/FriendsContext";
+import { useNotification } from "@/services/useNotification";
 
 // export type Workout = {
 //     id: number;
@@ -22,6 +23,7 @@ const router = useRouter();
 
 export default function WorkoutList() {
     const auth = useAuth();
+    useNotification();
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
 

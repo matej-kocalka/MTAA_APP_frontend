@@ -29,10 +29,20 @@ class AuthService {
     });
     return response;
   }
+
   async changePassword(token: string, password: string) {
     const response = await axios.patch(`${API_URL}/user/change/password`, {  password }, {
       headers: {
         Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  }
+
+  async registerPushToken(AuthToken: string, token: string) {
+    const response = await axios.post(`${API_URL}/auth/registerToken`, {  token }, {
+      headers: {
+        Authorization: `Bearer ${AuthToken}`
       },
     });
     return response;
