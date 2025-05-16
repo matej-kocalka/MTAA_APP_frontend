@@ -1,24 +1,14 @@
-import RNFS from 'react-native-fs';
-import React, { useCallback, useContext, useEffect, useState, useLayoutEffect } from "react";
-import { Image, View, StyleSheet, useColorScheme, ScrollView, TouchableOpacity, Modal, TextInput, RefreshControl, Button, Text } from "react-native";
-import { AuthContext } from "@/context/AuthContext";
+import React, { useCallback, useState, useLayoutEffect } from "react";
+import { View, StyleSheet, useColorScheme } from "react-native";
 import ThemedContainer from "@/components/ThemedContainer";
 import ThemedText from "@/components/ThemedText";
 import ThemedButton from "@/components/ThemedButton"
 import { Colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { downloadProfilePicture, deleteUserProfile, changePhoto } from "@/services/UserManagmentService";
-import NetInfo from '@react-native-community/netinfo';
-import useAuth from '@/hooks/useAuth';
-import AuthService from '@/services/AuthService';
 import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { useNavigation, useRouter, useFocusEffect } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
-
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { convertCompilerOptionsFromJson } from 'typescript';
 
 export default function RootLayout(dateTime) {
     const router = useRouter();
@@ -57,7 +47,6 @@ export default function RootLayout(dateTime) {
         const json = await AsyncStorage.getItem("dailyReminderInfo");
         if (json) {
             const { id } = JSON.parse(json);
-            console.log("lolz")
             await Notifications.cancelScheduledNotificationAsync(id);
             await AsyncStorage.removeItem("dailyReminderInfo");
         }
