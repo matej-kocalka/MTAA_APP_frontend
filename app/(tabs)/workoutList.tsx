@@ -13,6 +13,7 @@ import { FriendsContext } from "@/context/FriendsContext";
 import ThemedContainer from "@/components/ThemedContainer";
 import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
+import { useNotification } from "@/services/useNotification";
 
 // export type Workout = {
 //     id: number;
@@ -25,6 +26,7 @@ const router = useRouter();
 
 export default function WorkoutList() {
     const auth = useAuth();
+    useNotification();
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
 

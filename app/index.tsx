@@ -18,6 +18,11 @@ import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 import ThemedButton from "@/components/ThemedButton";
 import { Colors } from "@/constants/colors";
+import messaging from "@react-native-firebase/messaging";
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Message handled in the background!', remoteMessage);
+});
 
 export default function Index() {
   const router = useRouter();
