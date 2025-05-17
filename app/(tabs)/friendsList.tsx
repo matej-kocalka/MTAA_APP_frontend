@@ -1,5 +1,4 @@
 import { FriendContainer, FriendRequest } from "@/components/friend";
-import ThemedButton from "@/components/ThemedButton";
 import ThemedContainer from "@/components/ThemedContainer";
 import ThemedText from "@/components/ThemedText";
 import { Colors } from "@/constants/colors";
@@ -7,12 +6,10 @@ import { FriendsContext } from "@/context/FriendsContext";
 import useAuth from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "expo-router";
-import { useCallback, useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useContext, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, FlatList, TouchableOpacity, useColorScheme, View, Text, Modal, TextInput, ScrollView, RefreshControl } from "react-native";
 import NetInfo from '@react-native-community/netinfo';
 import { downloadFriendsProfilePicture } from "@/services/FriendsService";
-import ThemedThouchable from "@/components/ThemedTouchable";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type Friend = {
     id: number;

@@ -37,6 +37,11 @@ export default function RootLayout() {
     if (Platform.OS === "android") {
       StatusBar.setTranslucent(false);
       StatusBar.setBackgroundColor("transparent");
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+      });
+
     }
   }, []);
 

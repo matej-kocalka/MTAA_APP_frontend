@@ -1,15 +1,7 @@
-import WorkoutDataContainer from "@/components/workoutData";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Link, Stack } from "expo-router";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
-  Text,
   View,
   Alert,
   useColorScheme,
@@ -18,6 +10,7 @@ import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 import ThemedButton from "@/components/ThemedButton";
 import { Colors } from "@/constants/colors";
+import { isAxiosError } from "axios";
 
 export default function Index() {
   const router = useRouter();
@@ -33,8 +26,11 @@ export default function Index() {
       await auth?.login(email, password);
       router.push("/(tabs)/workoutList")
     } catch (e) {
-      console.log(e)
-      Alert.alert('Login failed', 'Invalid credentials');
+      if (isAxiosError(e) && e.response) {
+        console.log(e.response.data.message)
+        Alert.alert('Login failed', e.response.data.message);
+      }
+      else Alert.alert('Login failed', 'Network error');
     }
   };
 
@@ -45,8 +41,11 @@ export default function Index() {
         handleLogin();
       }
     } catch (e) {
-      console.log(e)
-      Alert.alert('Login failed', 'Invalid credentials');
+      if (isAxiosError(e) && e.response) {
+        console.log(e.response.data.message)
+        Alert.alert('Registration failed', e.response.data.message);
+      }
+      else Alert.alert('Registration failed', 'Network error');
     }
   };
 

@@ -3,11 +3,24 @@ import { Colors } from "@/constants/colors";
 
 import { View } from "react-native";
 
-type ThemedContainerProps = {
+/**
+ * Props for the ThemedContainer component.
+ */
+export type ThemedContainerProps = {
+  /**
+  * Optional custom styles to apply to the container.
+  */
   style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
 };
 
+/**
+ * A custom container component.
+ * Automatically adapts its background color to the current color scheme.
+ *
+ * @param {ThemedContainerProps} props - Props for customization and content
+ * @returns {JSX.Element} A themed container wrapping children
+ */
 const ThemedContainer = ({ style, children, ...props }: ThemedContainerProps) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme ? Colors[colorScheme] : Colors.light;

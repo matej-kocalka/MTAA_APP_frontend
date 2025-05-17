@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useState, useLayoutEffect } from "react";
 import { View, StyleSheet, useColorScheme } from "react-native";
 import ThemedContainer from "@/components/ThemedContainer";
@@ -9,8 +10,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from 'expo-notifications';
 import { useNavigation, useRouter, useFocusEffect } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { scheduleReminder, cancelReminder, loadReminder } from "@/services/ReminderService";
 
-export default function RootLayout(dateTime) {
+export default function RootLayout() {
     const router = useRouter();
     const navigation = useNavigation();
     useLayoutEffect(() => {
@@ -22,35 +24,12 @@ export default function RootLayout(dateTime) {
     }, [navigation]);
 
     const scheduleNotification = async (dateTime) => {
-        const identifier = await Notifications.scheduleNotificationAsync({
-            content: {
-                title: "It's time to workout!",
-                body: "You have set a reminder, and here it is.",
-            },
-            trigger: {
-                hour: dateTime.getHours(),
-                minute: dateTime.getMinutes(),
-                repeats: true,
-            }
-        });
-        alert("Reminder set");
-        const reminderInfo = {
-            id: identifier,
-            time: dateTime.toISOString(),
-        };
-
-        await AsyncStorage.setItem("dailyReminderInfo", JSON.stringify(reminderInfo));
+        await scheduleReminder(dateTime);
         router.back();
     };
 
     const cancelExistingReminder = async () => {
-        const json = await AsyncStorage.getItem("dailyReminderInfo");
-        if (json) {
-            const { id } = JSON.parse(json);
-            await Notifications.cancelScheduledNotificationAsync(id);
-            await AsyncStorage.removeItem("dailyReminderInfo");
-        }
-        alert("Reminder canceled.")
+        await cancelReminder();
         router.back();
     };
 
@@ -176,9 +155,8 @@ export default function RootLayout(dateTime) {
     };
 
     const loadStoredReminder = async () => {
-        const json = await AsyncStorage.getItem("dailyReminderInfo");
-        if (json) {
-            const { time } = JSON.parse(json);
+        const time = await loadReminder();
+        if (time) {
             setSet(true);
             setDate(new Date(time));
         }
@@ -198,7 +176,7 @@ export default function RootLayout(dateTime) {
                     <View style={{ alignItems: "center", margin: 30, marginBottom: 10 }}><Ionicons name="alarm-outline" size={150} color={theme.accentColor} /></View>
                     <ThemedText style={{ textAlign: "center", fontSize: 25, margin: 10 }}>Reminder set for:</ThemedText>
                     <ThemedText style={{ textAlign: "center", fontSize: 15, margin: 0, marginBottom: 20 }}>{date.toLocaleString([], { hour: '2-digit', minute: '2-digit' })}</ThemedText>
-                    <ThemedButton style={{ marginInline: 0, marginTop: 10, flexGrow: 1, backgroundColor:theme.deleteButton}}  onPress={() => cancelExistingReminder()}>Cancel reminder</ThemedButton>
+                    <ThemedButton style={{ marginInline: 0, marginTop: 10, flexGrow: 1, backgroundColor: theme.deleteButton }} onPress={() => cancelExistingReminder()}>Cancel reminder</ThemedButton>
 
                     {show && (
                         <DateTimePicker

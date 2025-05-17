@@ -50,7 +50,7 @@ export default function RootLayout() {
 
   const deleteProfile = async () => {
     try {
-      await deleteUserProfile(auth.getToken(), password);
+      await deleteUserProfile(auth.getToken()!, password);
       await handleLogout();
     } catch (e) {
       alert("Deletion failed!" + e)
@@ -207,7 +207,7 @@ export default function RootLayout() {
 
   const onRefresh = async () => {
     const fetchAndSetImage = async () => {
-      const localPath = await downloadProfilePicture(auth?.user?.token, "profile");
+      const localPath = await downloadProfilePicture(auth!.user!.token, "profile");
       if (localPath) {
         setLocalImageUri(localPath + `?t=${Date.now()}`);
       }
@@ -251,7 +251,7 @@ export default function RootLayout() {
       }>
       <ThemedContainer style={{ alignItems: "center" }}>
         <Image source={localImageUri ? { uri: localImageUri } : defaultImage} style={styles.image} />
-        <ThemedText style={styles.username}>{username}</ThemedText>
+        <ThemedText style={styles.username} numberOfLines={1} ellipsizeMode="tail">{username}</ThemedText>
         <ThemedText style={styles.email}>{auth?.user?.email}</ThemedText>
       </ThemedContainer>
       <ThemedContainer style={{ padding: 0 }}>

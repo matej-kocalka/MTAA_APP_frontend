@@ -1,14 +1,29 @@
 import { StyleSheet, StyleProp, useColorScheme, ViewStyle, TouchableOpacity, Text } from "react-native";
 import { Colors } from "@/constants/colors";
 
-import { View } from "react-native";
-
-type ThemedButtonProps = {
+/**
+ * Props for the ThemedButtonProps component.
+ */
+export type ThemedButtonProps = {
+    /**
+     * Optional custom styles to apply to the button container.
+     */
     style?: StyleProp<ViewStyle>;
+
     children?: React.ReactNode;
+
+    /**
+     * Function to call when the button is pressed.
+     */
     onPress?: () => void;
 };
 
+/**
+ * A custom button that adapts to the current theme (light/dark).
+ *
+ * @param {ThemedButtonProps} props - Props for customizing the button appearance and behavior
+ * @returns {JSX.Element} A themed button component
+ */
 const ThemedButton = ({ style, children, ...props }: ThemedButtonProps) => {
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
@@ -19,7 +34,7 @@ const ThemedButton = ({ style, children, ...props }: ThemedButtonProps) => {
             fontWeight: 'bold',
             textAlign: "center",
             flexGrow: 1,
-            alignContent:"center"
+            alignContent: "center"
         },
         Button: {
             backgroundColor: theme.secondaryAccent,

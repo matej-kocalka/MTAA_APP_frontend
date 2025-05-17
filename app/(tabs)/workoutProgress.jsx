@@ -1,34 +1,19 @@
+// @ts-nocheck
 import ThemedButton from "@/components/ThemedButton";
 import ThemedContainer from "@/components/ThemedContainer";
-import { WorkoutContainer, WorkoutInfoBox } from "@/components/workout";
+import { WorkoutInfoBox } from "@/components/workout";
 import { Colors } from "@/constants/colors";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useState, useRef } from "react";
-import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, SafeAreaView, Pressable, TextInput, Button, useColorScheme, Platform, PermissionsAndroid } from "react-native";
-import { Float } from "react-native/Libraries/Types/CodegenTypes";
-import Workout from "@/models/Workout";
-// import WorkoutManager from "@/managers/WorkoutManager";
+import { ScrollView, View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, useColorScheme, Platform, PermissionsAndroid } from "react-native";
 import useAuth from "@/hooks/useAuth";
 import { WorkoutContext } from "@/context/WorkoutContext";
-import ThemedView from "@/components/ThemedView";
 import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import MapView, { LatLng, Polyline } from "react-native-maps";
+import MapView, { Polyline } from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
 import { WEB_SOCKET_URL } from "@/constants/api";
 import WorkoutService from "@/services/WorkoutService";
-
-
-
-export type WorkoutProgress = {
-    id: number;
-    name: string;
-    date: Date;
-    distance: Float;
-    duration: string;
-    current_speed: number;
-    steps: number;
-};
 
 Geolocation.setRNConfiguration({
     authorizationLevel: 'always',
@@ -42,7 +27,7 @@ const router = useRouter();
 export default function currentWorkout() {
 
 
-    let preset: WorkoutProgress =
+    let preset =
     {
         id: 1,
         name: "New Workout",
@@ -55,24 +40,24 @@ export default function currentWorkout() {
 
     const auth = useAuth();
     const workoutManager = useContext(WorkoutContext);
-    const mapRef = useRef<MapView>();
-    const socketRef = useRef<WebSocket | null>(null);
+    const mapRef = useRef();
+    const socketRef = useRef(null);
     const [isWorkout, setWorkout] = useState(false);
-    const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress>(preset)
-    const [userPath, setUserPath] = useState<LatLng[]>([]);
-    const [currentCoords, setCurrentCoords] = useState<LatLng>(0);
-    const [isSocketConnected, setIsSocketConneted] = useState<Boolean>(false);
+    const [workoutProgress, setWorkoutProgress] = useState(preset)
+    const [userPath, setUserPath] = useState([]);
+    const [currentCoords, setCurrentCoords] = useState(0);
+    const [isSocketConnected, setIsSocketConneted] = useState(false);
     //const [minCoords, setMinCoords] = useState<LatLng>(0);
     //const [maxCoords, setMaxCoords] = useState<LatLng>(0);
 
     const handleWorkoutStart = () => {
         setWorkout(true);
-        try { workoutManager!.startNewWorkout(name, auth.user) } catch (e) { console.log(e); }
+        try { workoutManager.startNewWorkout(name, auth.user) } catch (e) { console.log(e); }
     };
 
     const handleWorkoutStop = async () => {
         const workout = workoutManager?.getCurrentWorkout();
-        workoutManager!.finishWorkout();
+        workoutManager.finishWorkout();
         setWorkoutProgress(preset);
         setWorkout(false);
         router.navigate({ pathname: "/(tabs)/workoutList" });
@@ -83,15 +68,15 @@ export default function currentWorkout() {
 
         const interval = setInterval(() => {
             if (isWorkout) {
-                let wp = workoutManager!.getWorkoutProgress(auth.user);
+                let wp = workoutManager.getWorkoutProgress(auth.user);
                 if (wp) {
 
                     setWorkoutProgress(wp);
                 }
 
-                workoutManager!.sendData(socketRef.current);
+                workoutManager.sendData(socketRef.current);
 
-                let c = workoutManager!.getCurrentCoords();
+                let c = workoutManager.getCurrentCoords();
                 if (c) {
                     setCurrentCoords(c);
                 }
@@ -113,7 +98,7 @@ export default function currentWorkout() {
         };
 
         ws.onmessage = (event) => {
-            workoutManager!.handleSocketMessage(JSON.parse(event.data));
+            workoutManager.handleSocketMessage(JSON.parse(event.data));
         };
 
         ws.onclose = () => {
@@ -166,7 +151,7 @@ export default function currentWorkout() {
             });
             */
             if (mapRef.current)
-                mapRef.current!.animateToRegion({
+                mapRef.current.animateToRegion({
                     latitude: currentCoords.latitude,
                     longitude: currentCoords.longitude,
                     latitudeDelta: 0.0008,
@@ -305,7 +290,7 @@ export default function currentWorkout() {
                     </MapView>
 
                 </View>
-                <WorkoutInfoBox data={workoutProgress!} />
+                <WorkoutInfoBox data={workoutProgress} />
                 <ThemedButton onPress={() => setVisible(true)}>Add friend</ThemedButton>
 
                 <Modal
@@ -328,7 +313,7 @@ export default function currentWorkout() {
                                 <TouchableOpacity
                                     style={[styles.modalButton, { backgroundColor: 'gray' }]}
                                     onPress={() => {
-                                        const result = WorkoutService.addParticipant(workoutManager!.getCurrentWorkout()!.w_id, friendEmail);
+                                        const result = WorkoutService.addParticipant(workoutManager.getCurrentWorkout().w_id, friendEmail);
                                         if (result.status != 201) {
                                             alert("Couldn't add friend");
                                         }

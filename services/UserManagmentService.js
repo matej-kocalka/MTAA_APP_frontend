@@ -1,11 +1,19 @@
+// @ts-nocheck
 import RNFS from 'react-native-fs';
 import axios from 'axios';
 import { Buffer } from 'buffer';
 import { API_URL } from '@/constants/api';
 
-// const PROFILE_PIC_PATH = `${RNFS.DocumentDirectoryPath}/images/profile.jpg`;
 const FormData = global.FormData;
 
+/**
+ * Downloads the user's profile picture from the backend and saves it locally.
+ * 
+ * @function downloadProfilePicture
+ * @param {string} token - The user's authentication token.
+ * @param {string} filename - The filename for the saved image.
+ * @returns A Promise resolving to the Axios response object.
+ */
 export const downloadProfilePicture = async (token, filename) => {
   const PROFILE_PIC_PATH = `${RNFS.DocumentDirectoryPath}/${filename}.jpg`;
   try {
@@ -27,8 +35,17 @@ export const downloadProfilePicture = async (token, filename) => {
   }
 };
 
-export const getProfilePicturePath = (filename) => 'file://' + `${RNFS.DocumentDirectoryPath}/images/${filename}.jpg`;
+// export const getProfilePicturePath = (filename) => 'file://' + `${RNFS.DocumentDirectoryPath}/images/${filename}.jpg`;
 
+/**
+ * Uploads a new profile photo for the user.
+ * 
+ * @function changePhoto
+ * @param {string} token - The user's authentication token.
+ * @param {{uri: string}} image - Image object containing the URI to the local image file.
+ * @returns A Promise resolving to the Axios response object.
+ * @throws Will throw an error if the upload fails.
+ */
 export const changePhoto = async (token, image) => {
   try {
     const formData = new FormData();
@@ -56,6 +73,15 @@ export const changePhoto = async (token, image) => {
   }
 };
 
+
+/**
+ * Deletes the user profile given the correct password.
+ * 
+ * @function deleteUserProfile
+ * @param {string} token - The user's authentication token.
+ * @param {string} password - The user's password required for verification.
+ * @returns A Promise resolving to the Axios response object.
+ */
 export const deleteUserProfile = async (token, password) => {
   try {
     console.log(token)

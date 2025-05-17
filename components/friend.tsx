@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Friend } from "@/app/(tabs)/friendsList"
-import { StyleSheet, Image, useColorScheme, View, Touchable, TouchableOpacity } from "react-native";
-import ThemedThouchable from "./ThemedTouchable";
+import { StyleSheet, Image, useColorScheme, View, TouchableOpacity } from "react-native";
 import ThemedText from "./ThemedText";
 import { Colors } from "@/constants/colors";
 import ThemedContainer from "./ThemedContainer";
@@ -9,8 +8,6 @@ import ThemedButton from "./ThemedButton";
 import User from "@/models/User";
 import FriendManager from "@/managers/FriendManager";
 import { router } from "expo-router";
-import { useSafeAreaFrame } from "react-native-safe-area-context";
-import { downloadFriendsProfilePicture } from "@/services/FriendsService";
 
 type FriendProps = {
     data: Friend;
@@ -18,11 +15,16 @@ type FriendProps = {
     friendManager: FriendManager;
 };
 
-
+/**
+ * Component displaying a friend entry with their profile picture and name.
+ * Clicking on the container navigates to the friend's workout list.
+ *
+ * @param {FriendProps} friendProps - Props containing friend info, user and manager
+ * @returns JSX.Element
+ */
 const FriendContainer = (friendProps: FriendProps) => {
     const openList = () => {
         friendProps.friendManager.openedFriend = friendProps.data;
-        // console.log(friendProps.user.id);
         router.push({ pathname: "/friendWorkoutList" });
     }
     const colorScheme = useColorScheme();
@@ -38,7 +40,7 @@ const FriendContainer = (friendProps: FriendProps) => {
                     style={styles.image}
                 />
                 <View>
-                    <ThemedText style={[styles.FriendName, { color: theme.textAccent, }]}>
+                    <ThemedText style={[styles.FriendName, { color: theme.textAccent, }]} numberOfLines={1} ellipsizeMode="tail">
                         {friendProps.data.name}
                     </ThemedText>
                     <ThemedText>
@@ -56,10 +58,14 @@ const handleAccept = async (data: Friend, user: User, friendManager: FriendManag
 
 const handleReject = async (data: Friend, user: User, friendManager: FriendManager) => {
     await friendManager.rejectRequest(user, data.id);
-    // console.log(data.id);
-    // console.log(user.token);
 }
 
+/**
+ * Component showing a friend request with Accept and Reject buttons.
+ *
+ * @param {FriendProps} friendProps - Props containing friend info, user and manager
+ * @returns JSX.Element
+ */
 const FriendRequest = (friendProps: FriendProps) => {
     const colorScheme = useColorScheme();
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
@@ -91,7 +97,6 @@ const styles = StyleSheet.create({
     },
 
     FriendName: {
-        // flexGrow: 1,
         fontSize: 35,
         fontWeight: "300",
     },
