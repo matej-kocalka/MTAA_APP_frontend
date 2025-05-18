@@ -69,8 +69,8 @@ beforeEach(() => {
   });
 });
 
-describe('Workout List Screen', () => {
-    it('Show workout List',  async () => {
+describe('Friend List Screen', () => {
+    it('Show friend list',  async () => {
         const { findAllByTestId, getAllByTestId } = render(
             <AuthContext.Provider value={{ login: loginMock, checkLoggedInUser: checkLoggedInMock, getToken: getTokenMock, user: fakeUser }}>
                 <FriendsContext.Provider value={mockFriendManager}>

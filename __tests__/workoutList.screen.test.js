@@ -35,7 +35,7 @@ beforeEach(() => {
 });
 
 describe('Workout List Screen', () => {
-    it('Show workout List',  async () => {
+    it('Show workout list',  async () => {
         const { findAllByTestId, getAllByTestId } = render(
             <AuthContext.Provider value={{ login: loginMock, checkLoggedInUser: checkLoggedInMock, getToken: getTokenMock, user: fakeUser }}>
                 <WorkoutContext.Provider value={mockWorkoutManager}>
