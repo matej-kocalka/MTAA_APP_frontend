@@ -13,7 +13,7 @@ import { FriendsContext } from "@/context/FriendsContext";
 import ThemedContainer from "@/components/ThemedContainer";
 import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import { useNotification } from "@/services/useNotification";
+import { useNotification } from "@/hooks/useNotification";
 
 // export type Workout = {
 //     id: number;
@@ -127,7 +127,7 @@ export default function WorkoutList() {
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = async () => {
         const fetchWorkouts = async () => {
-            workoutManager?.setUser(auth.user);
+            workoutManager?.setUser(auth.user!);
             const data = await workoutManager!.getWorkouts()!;
             setWorkouts(work => [...data]);
         };
@@ -138,7 +138,7 @@ export default function WorkoutList() {
 
     useEffect(() => {
         const fetchWorkouts = async () => {
-            workoutManager?.setUser(auth.user);
+            workoutManager?.setUser(auth.user!);
             const data = await workoutManager!.getWorkouts()!;
             setWorkouts(work => [...data]);
         };

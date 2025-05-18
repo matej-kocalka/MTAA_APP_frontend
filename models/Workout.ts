@@ -24,7 +24,7 @@ export default class Workout {
 
   getWorkoutResults(user: User | null) {
     type WorkoutProgress = {
-      id: number;
+      id: number | null;
       name: string;
       date: Date;
       distance: number;

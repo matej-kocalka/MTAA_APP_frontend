@@ -1,16 +1,27 @@
 import { Friend } from "@/app/(tabs)/friendsList";
-import useAuth from "@/hooks/useAuth";
 import User from "@/models/User";
 import Workout from "@/models/Workout";
 import WorkoutParticipant from "@/models/WorkoutParticipant";
-import { createFriendRequest, getFriendList, getFriendProfile, acceptFriendRequest, rejectFriendRequest, getFriendRequests, removeFriend, getFriendProfilePicture, downloadFriendsProfilePicture } from "@/services/FriendsService"
+import { createFriendRequest, getFriendList, acceptFriendRequest, rejectFriendRequest, getFriendRequests, removeFriend, downloadFriendsProfilePicture } from "@/services/FriendsService"
 import WorkoutService from "@/services/WorkoutService";
 
+/**
+ * Manages friend-related functionality such as sending requests,
+ * accepting/rejecting requests, listing friends, and retrieving workouts.
+ */
 export default class FriendManager {
+    /** List of friends. */
     private friendList: User[] = [];
+    /** List of friend requests. */
     private friendRequestList: User[] = [];
+    /** The currently opened/selected friend. */
     public openedFriend: Friend | null = null;
 
+    /**
+   * Retrieves the user's friend list from the server.
+   * @param currentUser - The currently logged-in user.
+   * @returns A Promise that resolves to an array of User objects.
+   */
     async getFriends(currentUser: User) {
         type friendListRequest = {
             email: string;
@@ -25,6 +36,11 @@ export default class FriendManager {
         return this.friendList;
     }
 
+    /**
+   * Retrieves the list of incoming friend requests.
+   * @param currentUser - The currently logged-in user.
+   * @returns A Promise that resolves to an array of User objects representing request senders.
+   */
     async getRequests(currentUser: User) {
         type friendListRequest = {
             user_id: number;
@@ -39,22 +55,46 @@ export default class FriendManager {
         return this.friendRequestList;
     }
 
+    /**
+   * Sends a friend request to another user.
+   * @param currentUser - The currently logged-in user.
+   * @param friendsEmail - The email of the user to add as a friend.
+   */
     async addFriends(currentUser: User, friendsEmail: string) {
         createFriendRequest(currentUser.token, friendsEmail);
     }
 
+    /**
+   * Removes an existing friend.
+   * @param currentUser - The currently logged-in user.
+   * @param friendId - The ID of the friend to remove.
+   */
     async removeFriend(currentUser: User, friendId: number) {
         removeFriend(currentUser.token, friendId);
     }
 
+    /**
+   * Accepts a friend request.
+   * @param currentUser - The currently logged-in user.
+   * @param friendId - The ID of the friend whose request is being accepted.
+   */
     async acceptRequest(currentUser: User, friendId: number) {
         acceptFriendRequest(currentUser.token, friendId);
     }
 
+    /**
+     * Rejects a friend request.
+     * @param currentUser - The currently logged-in user.
+     * @param friendId - The ID of the friend whose request is being rejected.
+     */
     async rejectRequest(currentUser: User, friendId: number) {
         rejectFriendRequest(currentUser.token, friendId);
     }
 
+    /**
+   * Retrieves the workouts associated with the currently opened friend.
+   * @returns A Promise that resolves to an array of Workout objects.
+   */
     async getWorkouts() {
         const result = await WorkoutService.getListFriend(this.openedFriend!.id);
         var workouts: Workout[] = []
@@ -66,6 +106,12 @@ export default class FriendManager {
         return workouts;
     }
 
+    /**
+  * Retrieves the profile picture URL for a specific friend.
+  * @param currentUser - The currently logged-in user.
+  * @param friendId - The friend's user ID.
+  * @returns {Promise<string|null>} Local path to the saved profile picture or null on failure.
+  */
     async getFriendsProfilePicture(currentUser: User, friendId: number) {
         return downloadFriendsProfilePicture(currentUser.token, friendId);
     }

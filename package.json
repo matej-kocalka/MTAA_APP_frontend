@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
+    "docs": "typedoc",
     "start": "expo start",
     "prebuild": "npx expo prebuild --clean --platform andoird",
     "reset-project": "node ./scripts/reset-project.js",
@@ -67,6 +68,8 @@
     "jest": "^29.7.0",
     "jest-expo": "~53.0.4",
     "react-test-renderer": "^19.0.0",
+    "typedoc": "^0.28.4",
+    "typedoc-plugin-react": "^0.1.0",
     "typescript": "^5.3.3"
   },
   "private": true,

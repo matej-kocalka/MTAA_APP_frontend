@@ -2,12 +2,21 @@ import AuthService from '@/services/AuthService';
 import User from '@/models/User';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WorkoutService from '@/services/WorkoutService';
-import { use } from 'react';
 
-class AuthManager {
+/**
+ * A class for managing user authentication state and persistence.
+ */
+export class AuthManager {
   private user: User | null = null;
   private token: string | null = null;
 
+  /**
+   * Logs in a user with the given credentials.
+   *
+   * @param email - The user's email address.
+   * @param password - The user's password.
+   * @returns A Promise that resolves to a User object on success.
+   */
   async login(email: string, password: string): Promise<User> {
     const data = await AuthService.login(email, password);
     const user_info = await AuthService.getUser(data.token);
@@ -18,20 +27,40 @@ class AuthManager {
     return this.user;
   }
 
+  /**
+  * Registers a new user.
+  *
+  * @param email - The user's email.
+  * @param password - The user's password.
+  * @returns A Promise that resolves to `true` if registration succeeded.
+  */
   async register(email: string, password: string): Promise<boolean> {
     const result = await AuthService.register(email, password);
     return result.status == 201;
   }
 
+  /**
+   * Logs out the current user and removes user data from local storage.
+   */
   async logout() {
     this.user = null;
     await AsyncStorage.removeItem('user');
   }
 
+  /**
+   * Retrieves the current user if one is logged in.
+   *
+   * @returns The current user or `null` if not logged in.
+   */
   getCurrentUser(): User | null {
     return this.user;
   }
 
+  /**
+   * Checks if a user is logged in by reading from local storage and verifying with the backend.
+   *
+   * @returns A Promise that resolves to a User object or `null` if not logged in or expired.
+   */
   async checkLoggedInUser(): Promise<User | null> {
     try {
       const jsonValue = await AsyncStorage.getItem('user');
@@ -59,6 +88,9 @@ class AuthManager {
     }
   }
 
+  /**
+  * Updates the locally stored user information from the server.
+  */
   async updateUser() {
     if (this.user) {
       const user_info = await AuthService.getUser(this.user.token);
@@ -68,6 +100,11 @@ class AuthManager {
     }
   }
 
+  /**
+     * Retrieves the current authentication token.
+     *
+     * @returns The token string or `null` if not set.
+     */
   getToken(): string | null {
     return this.token;
   }

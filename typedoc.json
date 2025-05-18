@@ -1,0 +1,14 @@
+{
+    "entryPoints": [
+        "services/*", "hooks/*", "managers/*", "context/*", "components/*",
+    ],
+    "out": "docs",
+    "includeVersion": true,
+    "excludePrivate": false,
+    "excludeProtected": true,
+    "excludeExternals": true,
+    "tsconfig": "tsconfig.json",
+    // "plugin": [
+    //     "typedoc-plugin-react"
+    // ]
+}
