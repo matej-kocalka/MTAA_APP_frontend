@@ -147,7 +147,7 @@ export default function FriendList() {
         </Modal>)
 
     const fetchPictures = async (friend_id: number) => {
-        return await downloadFriendsProfilePicture(auth.user!.token, friend_id)
+        return await friends?.getFriendsProfilePicture(auth.user!, friend_id)
     }
 
     const fetchFriends = async () => {
@@ -203,7 +203,6 @@ export default function FriendList() {
     const [refreshing, setRefreshing] = useState(true);
 
     const onRefresh = async () => {
-        setRefreshing(true);
         await fetchFriends();
         setRefreshing(false);
     };

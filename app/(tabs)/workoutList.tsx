@@ -22,9 +22,9 @@ import { useNotification } from "@/services/useNotification";
 //     distance: Float;
 // };
 
-const router = useRouter();
 
 export default function WorkoutList() {
+    const router = useRouter();
     const auth = useAuth();
     useNotification();
     const colorScheme = useColorScheme();
@@ -198,7 +198,7 @@ export default function WorkoutList() {
                     contentInsetAdjustmentBehavior="automatic"
                     data={workouts}
                     renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => router.push({ pathname: "/workoutDetail", params: { id: item.w_id, userId: auth.user?.id } })}><WorkoutContainer onDelete={onDelete} onShare={onShare} data={item} /></TouchableOpacity>
+                        <TouchableOpacity onPress={() => router.push({ pathname: "/workoutDetail", params: { id: item.w_id, userId: auth.user?.id } })} testID="workoutItem"><WorkoutContainer onDelete={onDelete} onShare={onShare} data={item} /></TouchableOpacity>
                     )}
                     keyExtractor={(item) => item.w_id!.toString()}
                 />

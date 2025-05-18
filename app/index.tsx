@@ -98,9 +98,9 @@ export default function Index() {
   return (
     <View style={{ backgroundColor: theme.backgroundColor, flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
       <View style={{ paddingBottom: 100, width: 300 }}>
-        <TextInput style={styles.inputContainer} placeholder="Email" value={email} onChangeText={setEmail} />
-        <TextInput style={styles.inputContainer} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-        <ThemedButton onPress={handleLogin}>Login</ThemedButton>
+        <TextInput style={styles.inputContainer} placeholder="Email" value={email} onChangeText={setEmail} testID="emailEntry"/>
+        <TextInput style={styles.inputContainer} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry testID="passwordEntry"/>
+        <ThemedButton onPress={handleLogin} testID="loginButton">Login</ThemedButton>
         <ThemedButton onPress={handleRegister}>Register</ThemedButton>
       </View>
     </View>

@@ -39,7 +39,7 @@ Geolocation.setRNConfiguration({
 
 const router = useRouter();
 
-export default function currentWorkout() {
+export default function WorkoutProgressFunction() {
 
 
     let preset: WorkoutProgress =
@@ -286,7 +286,8 @@ export default function currentWorkout() {
 
     if (isWorkout) {
         return (
-            <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}>
+            <ScrollView style={{ backgroundColor: theme.backgroundColor, flexGrow: 1 }}
+                        testID="workoutProgress">
                 <View style={styles.map}>
                     <MapView
                         style={styles.map}
@@ -353,7 +354,7 @@ export default function currentWorkout() {
                 <ThemedContainer>
                     <View style={{ alignItems: "center", margin: 30 }}><Ionicons name="walk" size={100} color={theme.accentColor} /></View>
                     <ThemedText style={{ textAlign: "center", fontSize: 20, margin: 10 }}>No active workout</ThemedText>
-                    <ThemedButton style={{ marginBottom: 15, }} onPress={() => setVisible(true)}>Start Workout</ThemedButton>
+                    <ThemedButton style={{ marginBottom: 15, }} onPress={() => setVisible(true)} testID="startWorkout">Start Workout</ThemedButton>
                 </ThemedContainer>
 
                 <Modal
@@ -370,6 +371,7 @@ export default function currentWorkout() {
                                 value={name}
                                 onChangeText={setName}
                                 style={styles.input}
+                                testID="newWorkoutName"
                             />
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
@@ -379,7 +381,7 @@ export default function currentWorkout() {
                                     <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.modalButton} onPress={() => { if (name.trim() === '') { alert("Name cannot be empty!") } else { setVisible(false); handleWorkoutStart() } }}>
-                                    <Text style={styles.buttonText}>Start</Text>
+                                    <Text style={styles.buttonText} testID="createWorkout">Start</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

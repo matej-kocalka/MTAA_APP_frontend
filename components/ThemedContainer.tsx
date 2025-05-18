@@ -4,6 +4,7 @@ import { Colors } from "@/constants/colors";
 import { View } from "react-native";
 
 type ThemedContainerProps = {
+  testID?: string;
   style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
 };
@@ -32,7 +33,7 @@ const ThemedContainer = ({ style, children, ...props }: ThemedContainerProps) =>
   });
 
   return (
-    <View style={[styles.Container, style]} {...props}>{children}</View>
+    <View style={[styles.Container, style]} testID={props.testID} {...props}>{children}</View>
   )
 }
 

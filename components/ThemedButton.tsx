@@ -4,6 +4,7 @@ import { Colors } from "@/constants/colors";
 import { View } from "react-native";
 
 type ThemedButtonProps = {
+    testID?: string;
     style?: StyleProp<ViewStyle>;
     children?: React.ReactNode;
     onPress?: () => void;
@@ -40,7 +41,7 @@ const ThemedButton = ({ style, children, ...props }: ThemedButtonProps) => {
     });
 
     return (
-        <TouchableOpacity style={[styles.Button, style]} onPress={props.onPress} {...props}>
+        <TouchableOpacity style={[styles.Button, style]} onPress={props.onPress} testID={props.testID} {...props}>
             <Text style={styles.ButtonText}>{children}</Text>
         </TouchableOpacity>
     )

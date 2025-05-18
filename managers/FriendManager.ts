@@ -3,7 +3,7 @@ import useAuth from "@/hooks/useAuth";
 import User from "@/models/User";
 import Workout from "@/models/Workout";
 import WorkoutParticipant from "@/models/WorkoutParticipant";
-import { createFriendRequest, getFriendList, getFriendProfile, acceptFriendRequest, rejectFriendRequest, getFriendRequests, removeFriend, getFriendProfilePicture } from "@/services/FriendsService"
+import { createFriendRequest, getFriendList, getFriendProfile, acceptFriendRequest, rejectFriendRequest, getFriendRequests, removeFriend, getFriendProfilePicture, downloadFriendsProfilePicture } from "@/services/FriendsService"
 import WorkoutService from "@/services/WorkoutService";
 
 export default class FriendManager {
@@ -67,6 +67,6 @@ export default class FriendManager {
     }
 
     async getFriendsProfilePicture(currentUser: User, friendId: number) {
-        return getFriendProfilePicture(currentUser.token, friendId);
+        return downloadFriendsProfilePicture(currentUser.token, friendId);
     }
 }

@@ -31,7 +31,7 @@ const FriendContainer = (friendProps: FriendProps) => {
     const [ImageUri, setLocalImageUri] = useState(friendProps.data.profilePic)
 
     return (
-        <TouchableOpacity onPress={openList}>
+        <TouchableOpacity onPress={openList} testID="FriendContainer">
             <ThemedContainer style={styles.FriendContainer}  >
                 <Image
                     source={ImageUri ? { uri: ImageUri + '?t=' + Date.now() } : defaultImage}
@@ -65,7 +65,7 @@ const FriendRequest = (friendProps: FriendProps) => {
     const theme = colorScheme ? Colors[colorScheme] : Colors.light;
 
     return (
-        <ThemedContainer>
+        <ThemedContainer testID="FriendRequest">
             <View>
                 <ThemedText>Friend request from:</ThemedText>
                 <ThemedText style={[styles.FriendRequestName, { color: theme.textAccent }]}>
